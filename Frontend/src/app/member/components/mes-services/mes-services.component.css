@@ -1,0 +1,75 @@
+.service-card {
+  border-radius: 16px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Stars display */
+.stars-display i {
+  font-size: 0.9rem;
+  margin-right: 2px;
+}
+
+.stars-display-sm i {
+  font-size: 0.75rem;
+  margin-right: 1px;
+}
+
+/* Stars input */
+.stars-input i.star-btn {
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-right: 4px;
+}
+
+.stars-input i.star-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Review form */
+.review-form {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.review-form textarea {
+  border-radius: 8px;
+  font-size: 0.85rem;
+  resize: none;
+}
+
+/* Review item */
+.review-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-left: 3px solid #ffc107;
+  border-radius: 0 8px 8px 0;
+  padding: 8px 12px;
+}
+
+/* Messages */
+.success-msg {
+  background: rgba(25, 135, 84, 0.1);
+  border: 1px solid rgba(25, 135, 84, 0.3);
+  color: #198754;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.error-msg {
+  background: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  color: #dc3545;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}

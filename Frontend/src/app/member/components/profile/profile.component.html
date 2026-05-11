@@ -1,0 +1,273 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-warning bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-person-circle text-warning fs-2"></i>
+    </div>
+    <div>
+      <h3 class="fw-bold mb-0">Mon Profil</h3>
+      <p class="text-muted mb-0">Informations membre SmartCar</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-warning"></div>
+  </div>
+
+  <div *ngIf="!loading && profile">
+
+    <!-- Alert verification required -->
+    <div *ngIf="profile.verificationStatus !== 'VERIFIED'"
+         class="alert alert-warning d-flex align-items-center gap-3 mb-4">
+      <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+      <div>
+        <strong>Compte non vérifié</strong>
+        <p class="mb-0 small">Veuillez vérifier votre compte pour accéder à tous les services. Cliquez sur "Modifier" pour soumettre vos documents.</p>
+      </div>
+    </div>
+
+    <!-- Profil Card -->
+    <div class="row g-4 mb-4">
+
+      <!-- Avatar + Info -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm text-center p-4">
+
+          <!-- Photo profil -->
+          <div class="position-relative d-inline-block mx-auto mb-3">
+            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center overflow-hidden bg-warning bg-opacity-10"
+                 style="width:90px;height:90px;">
+              <img *ngIf="profile.profilePicture" [src]="profile.profilePicture"
+                   class="w-100 h-100" style="object-fit:cover;">
+              <i *ngIf="!profile.profilePicture" class="bi bi-person-fill text-warning fs-1"></i>
+            </div>
+            <button class="btn btn-sm btn-warning rounded-circle position-absolute d-flex align-items-center justify-content-center"
+                    style="bottom:0;right:0;width:28px;height:28px;padding:0;"
+                    (click)="photoInput.click()">
+              <i class="bi bi-camera-fill" style="font-size:12px"></i>
+            </button>
+          </div>
+          <input #photoInput type="file" class="d-none"
+                 accept=".jpg,.jpeg,.png"
+                 (change)="onPhotoSelected($event)">
+
+          <h5 class="fw-bold mb-1">{{ profile.name }}</h5>
+          <p class="text-muted small mb-2">Client #{{ profile.custId }}</p>
+
+          <!-- Badges -->
+          <div class="d-flex flex-column gap-1 align-items-center">
+            <span class="badge bg-warning text-dark">Membre Actif</span>
+            <span class="badge"
+              [class.bg-primary]="profile.clientType === 'STANDARD'"
+              [class.bg-success]="profile.clientType === 'SPORTIF'"
+              [class.bg-info]="profile.clientType === 'ETUDIANT'"
+              [class.bg-warning]="profile.clientType === 'MINEUR'"
+              [class.bg-secondary]="!profile.clientType">
+              <i class="bi me-1"
+                [class.bi-person-fill]="profile.clientType === 'STANDARD' || !profile.clientType"
+                [class.bi-trophy-fill]="profile.clientType === 'SPORTIF'"
+                [class.bi-mortarboard-fill]="profile.clientType === 'ETUDIANT'"
+                [class.bi-person-hearts]="profile.clientType === 'MINEUR'">
+              </i>
+              {{ profile.clientType || 'Standard' }}
+            </span>
+            <span class="badge bg-{{ getVerificationColor() }}">
+              <i class="bi me-1"
+                [class.bi-patch-check-fill]="profile.verificationStatus === 'VERIFIED'"
+                [class.bi-clock-fill]="profile.verificationStatus === 'PENDING'"
+                [class.bi-x-circle-fill]="profile.verificationStatus === 'REJECTED'"
+                [class.bi-dash-circle]="!profile.verificationStatus">
+              </i>
+              {{ getVerificationLabel() }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Détails -->
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-transparent border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold">
+              <i class="bi bi-info-circle text-warning me-2"></i>Détails du compte
+            </h5>
+            <button class="btn btn-sm btn-outline-warning" (click)="toggleEdit()">
+              <i class="bi bi-pencil-fill me-1"></i>{{ editMode ? 'Annuler' : 'Modifier' }}
+            </button>
+          </div>
+          <div class="card-body">
+
+            <!-- View Mode -->
+            <ul class="list-group list-group-flush" *ngIf="!editMode">
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted"><i class="bi bi-person me-2"></i>Nom</span>
+                <span class="fw-semibold">{{ profile.name }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted"><i class="bi bi-phone me-2"></i>Téléphone</span>
+                <span class="fw-semibold">{{ profile.phone || 'Non renseigné' }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted"><i class="bi bi-person-badge me-2"></i>Type client</span>
+                <span class="badge"
+                  [class.bg-primary]="profile.clientType === 'STANDARD'"
+                  [class.bg-success]="profile.clientType === 'SPORTIF'"
+                  [class.bg-info]="profile.clientType === 'ETUDIANT'"
+                  [class.bg-warning]="profile.clientType === 'MINEUR'"
+                  [class.bg-secondary]="!profile.clientType">
+                  {{ profile.clientType || 'Standard' }}
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted"><i class="bi bi-patch-check me-2"></i>Vérification</span>
+                <span class="badge bg-{{ getVerificationColor() }}">{{ getVerificationLabel() }}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted"><i class="bi bi-check-circle me-2"></i>Statut</span>
+                <span class="badge"
+                  [class.bg-success]="profile.status === 'ACTIVE'"
+                  [class.bg-danger]="profile.status !== 'ACTIVE'">
+                  {{ profile.status }}
+                </span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between px-0">
+                <span class="text-muted"><i class="bi bi-wallet2 me-2"></i>Balance</span>
+                <span class="badge bg-success fs-6">{{ profile.balance | number:'1.3-3' }} TND</span>
+              </li>
+            </ul>
+
+            <!-- Edit Mode -->
+            <div *ngIf="editMode">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Nom complet</label>
+                <input type="text" class="form-control" [(ngModel)]="editName">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Téléphone</label>
+                <input type="text" class="form-control" [(ngModel)]="editPhone" placeholder="+216 XX XXX XXX">
+              </div>
+
+              <!-- Type Client Selection -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Type de client</label>
+                <div class="row g-2">
+                  <div class="col-6" *ngFor="let type of clientTypes">
+                    <div class="card border-2 text-center py-2 cursor-pointer"
+                         [class.border-primary]="editClientType === type.value"
+                         [class.bg-primary]="editClientType === type.value"
+                         [class.text-white]="editClientType === type.value"
+                         [class.border-light]="editClientType !== type.value"
+                         style="cursor:pointer;"
+                         (click)="selectClientType(type.value)">
+                      <i class="bi {{ type.icon }} fs-4 d-block mb-1"></i>
+                      <small class="fw-bold">{{ type.label }}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Document Vérification (si type != STANDARD) -->
+              <div class="mb-3" *ngIf="editClientType && editClientType !== 'STANDARD'">
+                <label class="form-label fw-semibold">
+                  Document requis:
+                  <small class="text-muted fw-normal">{{ getDocumentRequired() }}</small>
+                </label>
+                <div class="border rounded-3 p-3 text-center"
+                     style="cursor:pointer; border-style: dashed !important;"
+                     (click)="fileInput.click()">
+                  <i class="bi bi-cloud-upload fs-3 text-muted d-block mb-1"></i>
+                  <small class="text-muted">{{ selectedFile ? selectedFile.name : 'JPG, PNG, PDF — Max 5MB' }}</small>
+                </div>
+                <input #fileInput type="file" class="d-none"
+                       accept=".jpg,.jpeg,.png,.pdf"
+                       (change)="onFileSelected($event)">
+                <div *ngIf="filePreview" class="text-center mt-2">
+                  <img [src]="filePreview" class="img-thumbnail" style="max-height:120px;">
+                </div>
+              </div>
+
+              <div *ngIf="editSuccess" class="alert alert-success py-2 mb-3">
+                <i class="bi bi-check-circle me-2"></i>Profil mis à jour avec succès!
+              </div>
+              <div *ngIf="editError" class="alert alert-danger py-2 mb-3">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ editError }}
+              </div>
+
+              <button class="btn btn-warning w-100" (click)="saveProfile()" [disabled]="editLoading">
+                <span *ngIf="editLoading" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!editLoading" class="bi bi-save me-2"></i>
+                Enregistrer les modifications
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CDR Logs -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-transparent border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+        <h5 class="fw-bold">
+          <i class="bi bi-activity text-info me-2"></i>Services Utilisés
+        </h5>
+        <span class="badge bg-info">{{ cdrs.length }} usage(s)</span>
+      </div>
+      <div class="card-body">
+        <div *ngIf="loadingCdr" class="text-center py-3">
+          <div class="spinner-border text-info spinner-border-sm"></div>
+        </div>
+        <div *ngIf="!loadingCdr" class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Durée</th>
+                <th>Distance</th>
+                <th>Options</th>
+                <th>Montant</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cdr of cdrs">
+                <td><span class="badge bg-secondary">{{ getServiceName(cdr.serviceId) }}</span></td>
+                <td>{{ cdr.sessionStart | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ cdr.durationMin > 0 ? cdr.durationMin + ' min' : '-' }}</td>
+                <td>{{ cdr.distanceKm > 0 ? cdr.distanceKm + ' km' : '-' }}</td>
+                <td><small>{{ cdr.optionsActivated }}</small></td>
+                <td><strong class="text-primary">{{ cdr.rawAmount | number:'1.3-3' }} TND</strong></td>
+                <td>
+                  <span class="badge"
+                    [class.bg-success]="cdr.status === 'COMPLETED'"
+                    [class.bg-warning]="cdr.status === 'PENDING'"
+                    [class.bg-danger]="cdr.status === 'ERROR'">
+                    {{ cdr.status }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="cdrs.length === 0">
+                <td colspan="7" class="text-center text-muted py-4">Aucun service utilisé</td>
+              </tr>
+            </tbody>
+            <tfoot *ngIf="cdrs.length > 0">
+              <tr class="table-light">
+                <td colspan="5" class="fw-bold text-end">Total :</td>
+                <td colspan="2"><strong class="text-success fs-6">{{ totalAmount | number:'1.3-3' }} TND</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="!loading && !profile" class="alert alert-warning mt-4">
+    <i class="bi bi-exclamation-triangle me-2"></i>Impossible de charger le profil.
+  </div>
+
+</div>

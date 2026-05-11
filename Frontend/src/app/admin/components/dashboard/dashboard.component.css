@@ -1,0 +1,15 @@
+.kpi-card {
+  transition: transform 0.2s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-3px);
+}
+
+canvas {
+  max-height: 300px;
+}
+
+.alert {
+  border-radius: 10px;
+}

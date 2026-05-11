@@ -1,0 +1,14 @@
+.vehicle-card {
+  border-radius: 16px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+.vehicle-card.inactive {
+  opacity: 0.7;
+  filter: grayscale(30%);
+}

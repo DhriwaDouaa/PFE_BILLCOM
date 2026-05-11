@@ -1,0 +1,93 @@
+<div class="p-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div class="bg-warning bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-receipt text-warning fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">Mes Factures</h3>
+        <p class="text-muted mb-0">Historique de vos factures</p>
+      </div>
+    </div>
+  
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm border-start border-info border-4">
+          <div class="card-body py-2">
+            <p class="text-muted small mb-0">Total factures</p>
+            <h4 class="fw-bold mb-0 text-info">{{ invoices.length }}</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm border-start border-success border-4">
+          <div class="card-body py-2">
+            <p class="text-muted small mb-0">Total payé</p>
+            <h4 class="fw-bold mb-0 text-success">{{ getTotalPaid().toFixed(3) }} TND</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm border-start border-warning border-4">
+          <div class="card-body py-2">
+            <p class="text-muted small mb-0">En attente</p>
+            <h4 class="fw-bold mb-0 text-warning">
+                {{ getPendingCount() }}
+            </h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-warning"></div>
+    </div>
+  
+    <!-- Empty -->
+    <div *ngIf="!loading && invoices.length === 0" class="text-center py-5 text-muted">
+      <i class="bi bi-receipt fs-1 d-block mb-2"></i>
+      Aucune facture disponible
+    </div>
+  
+    <!-- Table -->
+    <div class="card border-0 shadow-sm" *ngIf="!loading && invoices.length > 0">
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>N° Facture</th>
+              <th>Période</th>
+              <th>Montant HT</th>
+              <th>Remise</th>
+              <th>Taxe</th>
+              <th>Total TTC</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let inv of invoices">
+              <td class="fw-bold">#{{ inv.invoiceId }}</td>
+              <td>
+                <small>{{ inv.periodStart | date:'dd/MM/yyyy' }}</small>
+                <small class="text-muted"> → </small>
+                <small>{{ inv.periodEnd | date:'dd/MM/yyyy' }}</small>
+              </td>
+              <td>{{ (inv.rawAmount ?? 0).toFixed(3) }} TND</td>
+              <td class="text-success">-{{ (inv.discountAmount ?? 0).toFixed(3) }} TND</td>
+              <td>+{{ (inv.taxAmount ?? 0).toFixed(3) }} TND</td>
+              <td class="fw-bold">{{ (inv.totalAmount ?? 0).toFixed(3) }} TND</td>
+              <td>
+                <span class="badge bg-{{ getStatusColor(inv.status) }}">
+                  {{ inv.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+  </div>

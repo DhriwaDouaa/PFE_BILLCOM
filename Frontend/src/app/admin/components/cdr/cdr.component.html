@@ -1,0 +1,156 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="bg-info bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-table text-info fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">CDR Logs</h3>
+        <p class="text-muted mb-0">Détails de consommation — BSSaaS SmartCar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body">
+          <p class="text-muted small text-uppercase mb-1">Total CDR</p>
+          <h3 class="fw-bold text-info mb-0">{{ cdrs.length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body">
+          <p class="text-muted small text-uppercase mb-1">Rated</p>
+          <h3 class="fw-bold text-success mb-0">{{ getRatedCdrs().length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body">
+          <p class="text-muted small text-uppercase mb-1">Pending</p>
+          <h3 class="fw-bold text-warning mb-0">{{ getPendingCdrs().length }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-primary border-4">
+        <div class="card-body">
+          <p class="text-muted small text-uppercase mb-1">Revenus Rated (DT)</p>
+          <h3 class="fw-bold text-primary mb-0">{{ totalAmount | number:'1.2-2' }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-info"></div>
+    <p class="text-muted mt-2">Chargement CDR...</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <!-- Table CDR -->
+  <div *ngIf="!loading && !error" class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+      <h5 class="fw-bold">
+        <i class="bi bi-list-ul text-info me-2"></i>Liste des CDR
+      </h5>
+      <span class="badge bg-info">{{ cdrs.length }} enregistrement(s)</span>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>#CDR</th>
+              <th>Client</th>
+              <th>Service</th>
+              <th>Début Session</th>
+              <th>Fin Session</th>
+              <th>Durée</th>
+              <th>Distance</th>
+              <th>WiFi</th>
+              <th>Passagers</th>
+              <th>Options</th>
+              <th>RFID</th>
+              <th>Eco</th>
+              <th>Prix (DT)</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cdr of cdrs">
+              <td><strong>#{{ cdr.cdrId }}</strong></td>
+              <td>
+                <span class="badge bg-info">Client #{{ cdr.custId }}</span>
+              </td>
+              <td>
+                <span class="badge bg-secondary">{{ getServiceName(cdr.serviceId) }}</span>
+              </td>
+              <td>{{ cdr.sessionStart | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ cdr.sessionEnd | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ cdr.durationMin > 0 ? cdr.durationMin + ' min' : '-' }}</td>
+              <td>{{ cdr.distanceKm > 0 ? cdr.distanceKm + ' km' : '-' }}</td>
+              <td>{{ cdr.wifiMb > 0 ? cdr.wifiMb + ' MB' : '-' }}</td>
+              <td>{{ cdr.passengersCount || '-' }}</td>
+              <td><small class="text-muted">{{ cdr.optionsActivated || '-' }}</small></td>
+              <td>
+                <span *ngIf="cdr.rfidTag" class="badge bg-success">
+                  🌿 {{ cdr.rfidTag }}
+                </span>
+                <span *ngIf="!cdr.rfidTag" class="text-muted">-</span>
+              </td>
+              <td>
+                <span *ngIf="cdr.ecoDriving === 1" class="badge bg-success">♻️ Oui</span>
+                <span *ngIf="cdr.ecoDriving !== 1" class="text-muted">-</span>
+              </td>
+              <td>
+                <strong *ngIf="cdr.status === 'RATED'" class="text-primary">
+                  {{ cdr.rawAmount | number:'1.2-2' }}
+                </strong>
+                <span *ngIf="cdr.status !== 'RATED'" class="text-muted">
+                  En attente...
+                </span>
+              </td>
+              <td>
+                <span class="badge"
+                  [class.bg-success]="cdr.status === 'RATED'"
+                  [class.bg-warning]="cdr.status === 'PENDING'"
+                  [class.bg-danger]="cdr.status === 'ERROR'">
+                  {{ cdr.status }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="cdrs.length === 0">
+              <td colspan="14" class="text-center text-muted py-4">
+                Aucun CDR trouvé
+              </td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="getRatedCdrs().length > 0">
+            <tr class="table-light">
+              <td colspan="12" class="fw-bold text-end">
+                Total Revenus (RATED) (DT) :
+              </td>
+              <td colspan="2">
+                <strong class="text-success fs-6">
+                  {{ totalAmount | number:'1.2-2' }}
+                </strong>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,187 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-heart-pulse text-primary fs-2"></i>
+    </div>
+    <div>
+      <h3 class="fw-bold mb-0">Health Check & Rating Control</h3>
+      <p class="text-muted mb-0"> Contrôle valorisation clients</p>
+    </div>
+  </div>
+
+
+
+  <!-- Ligne 2 : Rating Control -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-transparent border-0 pt-3 pb-0">
+      <h5 class="fw-bold">
+        <i class="bi bi-speedometer2 text-warning me-2"></i>
+        Rating Control — Valorisation Client
+      </h5>
+    </div>
+    <div class="card-body">
+
+      <!-- Sélection client -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-person-fill me-1"></i>Choisir un client
+          </label>
+          <select class="form-select" [(ngModel)]="selectedCustId" (ngModelChange)="onCustomerSelect()">
+            <option [value]="null">-- Sélectionner un client --</option>
+            <option *ngFor="let c of customers" [value]="c.custId">
+              {{ c.name }} — {{ c.codeClient }} ({{ c.clientType }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Info client sélectionné -->
+      <div *ngIf="selectedCustomer" class="animate__animated animate__fadeIn">
+
+        <!-- KPIs client -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-2 text-center">
+                <p class="text-muted small mb-1">Balance</p>
+                <h4 class="fw-bold text-success mb-0">
+                  {{ selectedCustomer.balance | number:'1.2-2' }} DT
+                </h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-2 text-center">
+                <p class="text-muted small mb-1">Total Brut</p>
+                <h4 class="fw-bold text-warning mb-0">
+                  {{ getTotalBrut() | number:'1.2-2' }} DT
+                </h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-2 text-center">
+                <p class="text-muted small mb-1">Remise</p>
+                <h4 class="fw-bold text-info mb-0">
+                  -{{ getDiscount() }}%
+                </h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card border-0 bg-light">
+              <div class="card-body py-2 text-center">
+                <p class="text-muted small mb-1">Total Net</p>
+                <h4 class="fw-bold text-primary mb-0">
+                  {{ getTotalNet() | number:'1.2-2' }} DT
+                </h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profil client -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+              <div class="card-body">
+                <h6 class="fw-bold mb-3">
+                  <i class="bi bi-person-circle me-2 text-primary"></i>
+                  Profil Client
+                </h6>
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2">
+                    <i class="bi bi-person text-muted me-2"></i>
+                    <strong>{{ selectedCustomer.name }}</strong>
+                  </li>
+                  <li class="mb-2">
+                    <i class="bi bi-tag text-muted me-2"></i>
+                    <span class="badge" [class]="getTypeBadgeClass(selectedCustomer.clientType)">
+                      {{ selectedCustomer.clientType }}
+                    </span>
+                  </li>
+                  <li class="mb-2">
+                    <i class="bi bi-upc-scan text-muted me-2"></i>
+                    {{ selectedCustomer.codeClient }}
+                  </li>
+                  <li class="mb-2">
+                    <i class="bi bi-phone text-muted me-2"></i>
+                    {{ selectedCustomer.phone }}
+                  </li>
+                  <li class="mb-2">
+                    <i class="bi bi-calendar text-muted me-2"></i>
+                    {{ selectedCustomer.age }} ans
+                  </li>
+                  <li>
+                    <i class="bi bi-circle-fill me-2"
+                       [class.text-success]="selectedCustomer.status === 'ACTIVE'"
+                       [class.text-danger]="selectedCustomer.status !== 'ACTIVE'"
+                       style="font-size:8px"></i>
+                    {{ selectedCustomer.status }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Temps restant estimé -->
+          <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+              <div class="card-header bg-transparent border-0 pt-3 pb-0">
+                <h6 class="fw-bold">
+                  <i class="bi bi-clock-history text-warning me-2"></i>
+                  Temps Restant Estimé par Service
+                </h6>
+                <small class="text-muted">
+                  Basé sur la balance restante :
+                  <strong class="text-success">
+                    {{ (selectedCustomer.balance - getTotalNet()) | number:'1.2-2' }} DT
+                  </strong>
+                </small>
+              </div>
+              <div class="card-body">
+                <div *ngFor="let t of getEstimatedTimeLeft()" class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-semibold small">
+                      <i class="bi bi-gear-fill me-1 text-muted"></i>
+                      {{ t.serviceName }}
+                    </span>
+                    <div class="text-end">
+                      <span class="badge bg-info me-1">
+                        <i class="bi bi-clock me-1"></i>{{ t.timeLeft }}
+                      </span>
+                      <small class="text-muted">{{ t.amountSpent | number:'1.2-2' }} DT dépensé</small>
+                    </div>
+                  </div>
+                  <div class="progress" style="height:6px;">
+                    <div class="progress-bar bg-warning"
+                         [style.width]="t.percentage + '%'">
+                    </div>
+                  </div>
+                </div>
+                <div *ngIf="getEstimatedTimeLeft().length === 0" class="text-center text-muted py-3">
+                  <i class="bi bi-inbox d-block fs-3 mb-2"></i>
+                  Aucun CDR pour ce client
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pas de client sélectionné -->
+      <div *ngIf="!selectedCustomer" class="text-center py-4 text-muted">
+        <i class="bi bi-person-check fs-1 d-block mb-2 text-warning"></i>
+        <p>Sélectionnez un client pour voir sa valorisation en temps réel</p>
+      </div>
+
+    </div>
+  </div>
+
+</div>

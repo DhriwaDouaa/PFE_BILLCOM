@@ -1,0 +1,225 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-info bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-grid-fill text-info fs-2"></i>
+    </div>
+    <div>
+      <h3 class="fw-bold mb-0">Mes Services</h3>
+      <p class="text-muted mb-0">Services disponibles pour votre véhicule</p>
+    </div>
+  </div>
+
+  <!-- Info client -->
+  <div *ngIf="customer" class="alert border-0 shadow-sm mb-4"
+       [class.alert-success]="customer.clientType === 'SPORTIF'"
+       [class.alert-primary]="customer.clientType === 'ETUDIANT'"
+       [class.alert-danger]="customer.clientType === 'MINEUR'"
+       [class.alert-secondary]="customer.clientType === 'STANDARD'">
+    <div class="d-flex align-items-center gap-3">
+      <i class="bi fs-3"
+         [class.bi-trophy-fill]="customer.clientType === 'SPORTIF'"
+         [class.bi-mortarboard-fill]="customer.clientType === 'ETUDIANT'"
+         [class.bi-shield-fill-exclamation]="customer.clientType === 'MINEUR'"
+         [class.bi-person-fill]="customer.clientType === 'STANDARD'"></i>
+      <div>
+        <strong>{{ customer.name }}</strong> —
+        <span class="badge"
+          [class.bg-success]="customer.clientType === 'SPORTIF'"
+          [class.bg-primary]="customer.clientType === 'ETUDIANT'"
+          [class.bg-danger]="customer.clientType === 'MINEUR'"
+          [class.bg-secondary]="customer.clientType === 'STANDARD'">
+          {{ customer.clientType }}
+        </span>
+        <span *ngIf="getDiscount() > 0" class="ms-2 badge bg-warning text-dark">
+          🎉 -{{ getDiscount() }}% sur tous les services
+        </span>
+        <span *ngIf="isWifiBlocked()" class="ms-2 badge bg-danger">
+          🚫 WiFi non disponible pour votre profil
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-info"></div>
+    <p class="text-muted mt-2">Chargement des services...</p>
+  </div>
+
+  <!-- Services Cards -->
+  <div *ngIf="!loading" class="row g-4">
+    <div *ngFor="let s of services" class="col-md-4">
+      <div class="card border-0 shadow-sm h-100 service-card"
+           [class.opacity-50]="isServiceBlocked(s)">
+        <div class="card-body">
+
+          <!-- Header service -->
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-3 p-3 bg-light">
+              <i class="bi fs-3"
+                 [ngClass]="[getServiceIcon(s), getServiceColor(s.serviceType)]"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-0">{{ s.serviceName }}</h5>
+              <small class="text-muted">{{ s.codeService }}</small>
+            </div>
+          </div>
+
+          <!-- Note moyenne -->
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <div class="stars-display">
+              <i *ngFor="let star of [1,2,3,4,5]" class="bi"
+                 [class.bi-star-fill]="getActiveStarClass(s.serviceId, star)"
+                 [class.bi-star]="!getActiveStarClass(s.serviceId, star)"
+                 [class.text-warning]="getActiveStarClass(s.serviceId, star)"
+                 [class.text-muted]="!getActiveStarClass(s.serviceId, star)">
+              </i>
+            </div>
+            <small class="text-muted">
+              {{ getAverageRating(s.serviceId) | number:'1.1-1' }}/5
+              ({{ getServiceReviews(s.serviceId).length }} avis)
+            </small>
+          </div>
+
+          <!-- Description -->
+          <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ s.description || getBillingLabel(s.billingModel) }}
+          </p>
+
+          <!-- Prix -->
+          <div class="border-top pt-3 mb-3">
+            <div *ngIf="s.billingModel !== 'INCLUDED'">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Prix normal</span>
+                <span class="text-decoration-line-through text-muted"
+                      *ngIf="getDiscount() > 0">
+                  {{ s.unitPrice | number:'1.4-4' }} DT/{{ s.unit }}
+                </span>
+                <span *ngIf="getDiscount() === 0" class="fw-bold">
+                  {{ s.unitPrice | number:'1.4-4' }} DT/{{ s.unit }}
+                </span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-1"
+                   *ngIf="getDiscount() > 0">
+                <span class="text-muted small">Votre prix (-{{ getDiscount() }}%)</span>
+                <span class="fw-bold text-success fs-6">
+                  {{ getPriceAfterDiscount(s.unitPrice) | number:'1.4-4' }} DT/{{ s.unit }}
+                </span>
+              </div>
+            </div>
+            <div *ngIf="s.billingModel === 'INCLUDED'" class="text-center">
+              <span class="badge bg-success fs-6">✅ Inclus gratuitement</span>
+            </div>
+          </div>
+
+          <!-- Bloqué -->
+          <div *ngIf="isServiceBlocked(s)" class="alert alert-danger py-2 mb-2">
+            <i class="bi bi-slash-circle me-2"></i>
+            <strong>Service non disponible</strong> pour votre profil mineur
+          </div>
+
+          <!-- Bouton avis -->
+          <div *ngIf="!isServiceBlocked(s)" class="mt-2">
+            <div *ngIf="!hasAlreadyReviewed(s.serviceId)">
+              <button class="btn btn-outline-warning btn-sm w-100"
+                      (click)="openReviewForm(s.serviceId)">
+                <i class="bi bi-star-fill me-1"></i>Donner mon avis
+              </button>
+            </div>
+            <div *ngIf="hasAlreadyReviewed(s.serviceId)" class="text-center">
+              <span class="badge bg-success">
+                <i class="bi bi-check-circle me-1"></i>Avis soumis ✓
+              </span>
+            </div>
+          </div>
+
+          <!-- Formulaire avis inline -->
+          <div *ngIf="selectedServiceId === s.serviceId"
+               class="review-form mt-3 animate__animated animate__fadeIn">
+
+            <div class="success-msg" *ngIf="successMsg">
+              <i class="bi bi-check-circle me-1"></i>{{ successMsg }}
+            </div>
+            <div class="error-msg" *ngIf="errorMsg">
+              <i class="bi bi-exclamation-circle me-1"></i>{{ errorMsg }}
+            </div>
+
+            <p class="fw-semibold small mb-2">Votre note :</p>
+            <div class="stars-input mb-3">
+              <i *ngFor="let star of [1,2,3,4,5]" class="bi star-btn"
+                 [class.bi-star-fill]="star <= (hoverRating || newRating)"
+                 [class.bi-star]="star > (hoverRating || newRating)"
+                 [class.text-warning]="star <= (hoverRating || newRating)"
+                 [class.text-muted]="star > (hoverRating || newRating)"
+                 (click)="setRating(star)"
+                 (mouseenter)="setHover(star)"
+                 (mouseleave)="clearHover()">
+              </i>
+              <small class="ms-2 text-muted" *ngIf="newRating > 0">
+                {{ newRating }}/5
+              </small>
+            </div>
+
+            <textarea class="form-control form-control-sm mb-3"
+                      [(ngModel)]="newComment"
+                      rows="3"
+                      placeholder="Partagez votre expérience...">
+            </textarea>
+
+            <div class="d-flex gap-2">
+              <button class="btn btn-warning btn-sm flex-grow-1"
+                      (click)="submitReview()" [disabled]="submitting">
+                <span *ngIf="!submitting">
+                  <i class="bi bi-send me-1"></i>Envoyer
+                </span>
+                <span *ngIf="submitting">
+                  <span class="spinner-border spinner-border-sm me-1"></span>
+                  Envoi...
+                </span>
+              </button>
+              <button class="btn btn-outline-secondary btn-sm"
+                      (click)="closeReviewForm()">
+                Annuler
+              </button>
+            </div>
+          </div>
+
+          <!-- Liste des avis -->
+          <div *ngIf="getServiceReviews(s.serviceId).length > 0" class="mt-3">
+            <p class="fw-semibold small text-muted mb-2">
+              <i class="bi bi-chat-dots me-1"></i>
+              Avis clients ({{ getServiceReviews(s.serviceId).length }})
+            </p>
+            <div *ngFor="let r of getServiceReviews(s.serviceId)" class="review-item mb-2">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <div class="stars-display-sm">
+                  <i *ngFor="let star of [1,2,3,4,5]" class="bi"
+                     [class.bi-star-fill]="star <= r.rating"
+                     [class.bi-star]="star > r.rating"
+                     [class.text-warning]="star <= r.rating"
+                     [class.text-muted]="star > r.rating">
+                  </i>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <small class="text-muted">{{ r.reviewDate | date:'dd/MM/yyyy' }}</small>
+                  <button *ngIf="r.custId === custId"
+                          class="btn btn-sm btn-outline-danger py-0 px-1"
+                          (click)="deleteReview(r.reviewId)"
+                          title="Supprimer mon avis">
+                    <i class="bi bi-trash3-fill" style="font-size:0.7rem"></i>
+                  </button>
+                </div>
+              </div>
+              <p class="small text-muted mb-0 fst-italic">"{{ r.comment }}"</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

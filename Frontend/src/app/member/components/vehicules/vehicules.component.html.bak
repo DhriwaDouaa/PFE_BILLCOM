@@ -1,0 +1,1642 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-info bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-car-front-fill text-info fs-2"></i>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+    <div>
+      <h3 class="fw-bold mb-0"> Véhicules</h3>
+      <p class="text-muted mb-0">{{ vehicles.length }} véhicule(s) enregistré(s)</p>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+    <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Total Véhicules</p>
+          <h4 class="fw-bold mb-0 text-info">{{ vehicles.length }}</h4>
+          <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+        <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Actifs</p>
+          <h4 class="fw-bold mb-0 text-success">{{ getActiveCount() }}</h4>
+          <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+        <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Inactifs</p>
+          <h4 class="fw-bold mb-0 text-danger">{{ getInactiveCount() }}</h4>
+          <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+        <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+    <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+  <!-- Véhicules Cards -->
+  <div class="row g-4">
+    <div class="col-md-4" *ngFor="let v of vehicles">
+      <div class="card border-0 shadow-sm h-100 vehicle-card"
+           [class.inactive]="v.status !== 'ACTIVE'">
+        <div class="card-body">
+
+          <!-- Header véhicule -->
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-3 p-3"
+                 [class.bg-info]="v.status === 'ACTIVE'"
+                 [class.bg-secondary]="v.status !== 'ACTIVE'">
+              <i class="bi bi-car-front-fill fs-3 text-white"></i>
+              <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+            <div>
+              <h5 class="fw-bold mb-0">{{ v.brand }} {{ v.model }}</h5>
+              <small class="text-muted">{{ v.licensePlate }}</small>
+              <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+            <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+          <!-- Détails -->
+          <ul class="list-unstyled mb-3">
+            <li class="mb-2">
+              <i class="bi bi-calendar3 text-muted me-2"></i>
+              Année <strong>{{ v.year }}</strong>
+            </li>
+            <li class="mb-2">
+              <i class="bi bi-palette-fill text-muted me-2"></i>
+              Couleur : <strong>{{ v.color }}</strong>
+            </li>
+            <li>
+              <i class="bi bi-fuel-pump-fill text-muted me-2"></i>
+              {{ v.fuel }}
+            </li>
+          </ul>
+
+          <!-- Statut -->
+          <div class="d-flex justify-content-between align-items-center border-top pt-3">
+            <span class="badge"
+                  [class.bg-success]="v.status === 'ACTIVE'"
+                  [class.bg-danger]="v.status !== 'ACTIVE'">
+              <i class="bi me-1"
+                 [class.bi-check-circle]="v.status === 'ACTIVE'"
+                 [class.bi-x-circle]="v.status !== 'ACTIVE'"></i>
+              {{ v.status === 'ACTIVE' ? 'Actif' : 'Inactif' }}
+            </span>
+            <small class="text-muted">
+              <i class="bi bi-shield-check me-1 text-info"></i>
+              IoT Connecté
+            </small>
+            <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+          <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+        <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+    <div class="col-12" *ngIf="vehicles.length === 0">
+      <div class="text-center py-5 text-muted">
+        <i class="bi bi-car-front fs-1 d-block mb-2"></i>
+        Aucun véhicule enregistré
+        <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+      <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+    <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>
+
+  <!-- ======= APPELER LE VÉHICULE ======= -->
+
+  <!-- Status Alert -->
+  <div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mt-4">
+    <div class="spinner-border spinner-border-sm" *ngIf="carCalled"></div>
+    <i class="bi bi-info-circle-fill" *ngIf="!carCalled"></i>
+    {{ statusMessage }}
+  </div>
+
+  <!-- Map -->
+  <div class="card border-0 shadow-sm mt-4">
+    <div class="card-body p-0">
+      <div id="map" style="height: 450px; border-radius: 12px;"></div>
+    </div>
+  </div>
+
+  <!-- IoT Info -->
+  <div class="row g-3 mt-3" *ngIf="iotData">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Vitesse</p>
+          <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Batterie</p>
+          <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Température</p>
+          <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Obstacle</p>
+          <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex gap-3 mt-4">
+    <button class="btn btn-success btn-lg px-5" (click)="callCar()" [disabled]="carCalled">
+      <i class="bi bi-geo-alt-fill me-2"></i>
+      Appeler le véhicule
+    </button>
+    <button class="btn btn-outline-danger btn-lg px-4" (click)="cancelCar()" *ngIf="carCalled">
+      <i class="bi bi-x-circle me-2"></i>
+      Annuler
+    </button>
+  </div>
+
+</div>

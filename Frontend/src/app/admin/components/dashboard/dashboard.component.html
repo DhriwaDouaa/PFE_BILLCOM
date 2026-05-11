@@ -1,0 +1,348 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-info bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-speedometer2 text-info fs-2"></i>
+    </div>
+    <div>
+      <h3 class="fw-bold mb-0">Dashboard BSS</h3>
+      <p class="text-muted mb-0">Vue d'ensemble — BSSaaS SmartCar</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-info"></div>
+    <p class="text-muted mt-2">Chargement du dashboard...</p>
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Vérifications en attente -->
+<div class="card border-0 shadow-sm mb-4" *ngIf="pendingVerifications.length > 0">
+  <div class="card-header bg-transparent border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+    <h5 class="fw-bold">
+      <i class="bi bi-patch-check-fill text-warning me-2"></i>
+      Vérifications en attente
+    </h5>
+    <span class="badge bg-warning fs-6">{{ pendingVerifications.length }}</span>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Client</th>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Statut</th>
+            <th>Document</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of pendingVerifications">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:36px;height:36px;">
+                  <i class="bi bi-person-fill text-warning"></i>
+                </div>
+                <span class="fw-semibold">{{ c.name }}</span>
+              </div>
+            </td>
+            <td><span class="badge bg-secondary">#{{ c.custId }}</span></td>
+            <td>
+              <span class="badge"
+                [class.bg-primary]="c.clientType === 'STANDARD'"
+                [class.bg-success]="c.clientType === 'SPORTIF'"
+                [class.bg-info]="c.clientType === 'ETUDIANT'"
+                [class.bg-warning]="c.clientType === 'MINEUR'">
+                {{ c.clientType || 'Standard' }}
+              </span>
+            </td>
+            <td>
+              <span class="badge bg-warning">En attente</span>
+            </td>
+            <td>
+              <span *ngIf="c.verificationDoc" class="text-success small">
+                <i class="bi bi-file-check-fill me-1"></i>Document soumis
+              </span>
+              <span *ngIf="!c.verificationDoc" class="text-muted small">
+                <i class="bi bi-file-x me-1"></i>Aucun document
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm" (click)="verifyCustomer(c.custId)">
+                  <i class="bi bi-check-lg me-1"></i>Vérifier
+                </button>
+                <button class="btn btn-danger btn-sm" (click)="rejectCustomer(c.custId)">
+                  <i class="bi bi-x-lg me-1"></i>Rejeter
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Aucune vérification en attente -->
+<div class="alert alert-success d-flex align-items-center gap-2 mb-4" *ngIf="pendingVerifications.length === 0">
+  <i class="bi bi-patch-check-fill fs-4"></i>
+  <div>
+    <strong>Tout est à jour!</strong>
+    <p class="mb-0 small">Aucune vérification en attente.</p>
+  </div>
+</div>
+    <!-- KPIs -->
+    <div class="row g-4 mb-4">
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm border-start border-info border-4 kpi-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-semibold">Clients Actifs</p>
+                <h2 class="fw-bold text-info mb-0">{{ getActiveCustomers() }}</h2>
+                <small class="text-success">
+                  <i class="bi bi-people-fill me-1"></i>
+                  {{ customers.length }} total
+                </small>
+              </div>
+              <div class="bg-info bg-opacity-10 p-3 rounded-3">
+                <i class="bi bi-people-fill text-info fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm border-start border-success border-4 kpi-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-semibold">CDR Rated</p>
+                <h2 class="fw-bold text-success mb-0">{{ getRatedCdrs() }}</h2>
+                <small class="text-muted">
+                  <i class="bi bi-activity me-1"></i>
+                  {{ allCdrs.length }} total
+                </small>
+              </div>
+              <div class="bg-success bg-opacity-10 p-3 rounded-3">
+                <i class="bi bi-activity text-success fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm border-start border-warning border-4 kpi-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-semibold">Revenus Total</p>
+                <h2 class="fw-bold text-warning mb-0">{{ totalRevenue | number:'1.2-2' }} DT</h2>
+                <small class="text-muted">
+                  <i class="bi bi-cash-stack me-1"></i>
+                  Tous CDR rated
+                </small>
+              </div>
+              <div class="bg-warning bg-opacity-10 p-3 rounded-3">
+                <i class="bi bi-cash-stack text-warning fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card border-0 shadow-sm border-start border-danger border-4 kpi-card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <p class="text-muted small text-uppercase mb-1 fw-semibold">Factures Pending</p>
+                <h2 class="fw-bold text-danger mb-0">{{ pendingInvoices }}</h2>
+                <small class="text-muted">
+                  <i class="bi bi-receipt me-1"></i>
+                  {{ invoices.length }} total
+                </small>
+              </div>
+              <div class="bg-danger bg-opacity-10 p-3 rounded-3">
+                <i class="bi bi-receipt text-danger fs-3"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques ligne 1 -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 pb-0">
+            <h5 class="fw-bold">
+              <i class="bi bi-bar-chart-fill text-info me-2"></i>
+              Revenus par Mois (DT)
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas #revenueChart height="120"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 pb-0">
+            <h5 class="fw-bold">
+              <i class="bi bi-pie-chart-fill text-warning me-2"></i>
+              Services Utilisés
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas #servicesChart height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphiques ligne 2 -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 pb-0">
+            <h5 class="fw-bold">
+              <i class="bi bi-graph-up text-success me-2"></i>
+              CDR par Jour
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas #cdrChart height="150"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 pb-0">
+            <h5 class="fw-bold">
+              <i class="bi bi-person-badge-fill text-primary me-2"></i>
+              Clients par Type
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas #clientTypeChart height="150"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertes + Membres -->
+    <div class="row g-4">
+
+      <!-- Alertes BSS -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 pb-0">
+            <h5 class="fw-bold">
+              <i class="bi bi-bell-fill text-danger me-2"></i>
+              Alertes BSS
+            </h5>
+          </div>
+          <div class="card-body">
+
+            <!-- Balance faible -->
+            <div *ngFor="let c of lowBalanceClients" class="alert alert-warning py-2 mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+                <div>
+                  <strong>{{ c.name }}</strong>
+                  <p class="mb-0 small">Balance faible : {{ c.balance | number:'1.2-2' }} DT</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Factures pending -->
+            <ng-container *ngFor="let inv of invoices">
+              <div *ngIf="inv.status === 'PENDING'" class="alert alert-danger py-2 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-receipt text-danger"></i>
+                  <div>
+                    <strong>Facture #{{ inv.invoiceId }}</strong>
+                    <p class="mb-0 small">{{ inv.totalAmount | number:'1.2-2' }} DT — PENDING</p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <div *ngIf="lowBalanceClients.length === 0 && pendingInvoices === 0"
+                 class="text-center text-muted py-3">
+              <i class="bi bi-check-circle-fill text-success fs-3 d-block mb-2"></i>
+              Aucune alerte
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Membres & Consommation -->
+      <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 pb-0">
+            <h5 class="fw-bold">
+              <i class="bi bi-people-fill text-info me-2"></i>
+              Consommation par Client
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Code</th>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Balance (DT)</th>
+                    <th>Total Brut (DT)</th>
+                    <th>Total Net (DT)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let c of customers">
+                    <td><span class="badge bg-secondary">{{ c.codeClient }}</span></td>
+                    <td><strong>{{ c.name }}</strong></td>
+                    <td>
+                      <span class="badge"
+                        [class.bg-success]="c.clientType==='SPORTIF'"
+                        [class.bg-primary]="c.clientType==='ETUDIANT'"
+                        [class.bg-danger]="c.clientType==='MINEUR'"
+                        [class.bg-secondary]="c.clientType==='STANDARD'">
+                        {{ c.clientType }}
+                      </span>
+                    </td>
+                    <td>{{ c.balance | number:'1.2-2' }}</td>
+                    <td>{{ getCdrTotal(c.custId) | number:'1.2-2' }}</td>
+                    <td>
+                      <strong class="text-primary">
+                        {{ getAmountAfterDiscount(c.custId, c.clientType) | number:'1.2-2' }}
+                      </strong>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot class="table-light">
+                  <tr>
+                    <td colspan="4" class="fw-bold text-end">Total :</td>
+                    <td class="fw-bold">{{ totalRevenue | number:'1.2-2' }}</td>
+                    <td class="fw-bold text-primary">{{ totalRevenue | number:'1.2-2' }}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>

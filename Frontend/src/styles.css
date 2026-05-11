@@ -1,0 +1,207 @@
+/* ===== BASE ===== */
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; }
+.btn { border-radius: 8px; }
+.modal-content { border-radius: 16px !important; }
+.table > :not(caption) > * > * { vertical-align: middle; }
+.main-content { margin-left: 250px; min-height: 100vh; }
+@media (max-width: 768px) { .main-content { margin-left: 0; } }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  transition: all 0.3s ease;
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  margin: 2px 8px;
+  padding: 10px 16px;
+  transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+  background: rgba(0, 180, 216, 0.2) !important;
+  color: #00b4d8 !important;
+  transform: translateX(4px);
+}
+
+.sidebar .nav-link.active {
+  background: rgba(0, 180, 216, 0.2) !important;
+  color: #00b4d8 !important;
+  border-left: 3px solid #00b4d8;
+}
+
+.sidebar .nav-link i { width: 20px; }
+
+/* ===== CARDS ===== */
+.card {
+  border-radius: 12px !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.kpi-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* ===== TABLE ===== */
+.table tbody tr {
+  transition: all 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background-color: rgba(0, 180, 216, 0.05) !important;
+}
+
+/* ===== INPUTS ===== */
+.form-control:focus,
+.form-select:focus {
+  border-color: #00b4d8 !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 180, 216, 0.2) !important;
+  transition: all 0.2s ease;
+}
+
+/* ===== BADGES ===== */
+.badge {
+  transition: all 0.2s ease;
+}
+
+/* ===== ALERTS ===== */
+.alert {
+  animation: fadeIn 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+/* ===== MODAL ===== */
+.modal {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  animation: fadeInDown 0.3s ease-in-out;
+}
+
+/* ===== PAGE TRANSITION ===== */
+router-outlet + * {
+  animation: fadeInUp 0.4s ease-in-out;
+}
+
+/* ===== STATUS PULSE ===== */
+.bg-success.rounded-circle {
+  animation: pulse 2s infinite;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #00b4d8;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0077b6;
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ===== KEYFRAMES ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.sidebar {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 180, 216, 0.5);
+}

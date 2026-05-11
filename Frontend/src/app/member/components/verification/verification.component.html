@@ -1,0 +1,156 @@
+<div class="p-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-patch-check-fill text-primary fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">Vérification du compte</h3>
+        <p class="text-muted mb-0">Soumettez vos documents pour vérifier votre profil</p>
+      </div>
+    </div>
+  
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  
+    <div *ngIf="!loading && customer">
+  
+      <!-- Status Card -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+                  <i class="bi {{ getTypeIcon() }} text-primary fs-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">{{ customer.name }}</h5>
+                  <span class="badge bg-primary">{{ getTypeLabel() }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+              <p class="text-muted small mb-1">Statut de vérification</p>
+              <span class="badge fs-6 bg-{{ getStatusColor() }}">
+                <i class="bi me-1"
+                  [class.bi-check-circle-fill]="customer.verificationStatus === 'VERIFIED'"
+                  [class.bi-x-circle-fill]="customer.verificationStatus === 'REJECTED'"
+                  [class.bi-clock-fill]="customer.verificationStatus === 'PENDING'"
+                  [class.bi-dash-circle]="!customer.verificationStatus">
+                </i>
+                {{ getStatusLabel() }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Already Verified -->
+      <div *ngIf="customer.verificationStatus === 'VERIFIED'"
+           class="alert alert-success d-flex align-items-center gap-3">
+        <i class="bi bi-patch-check-fill fs-3"></i>
+        <div>
+          <strong>Compte vérifié!</strong>
+          <p class="mb-0 small">Votre compte a été vérifié avec succès. Vous bénéficiez de tous les avantages.</p>
+        </div>
+      </div>
+  
+      <!-- Upload Form -->
+      <div *ngIf="customer.verificationStatus !== 'VERIFIED'">
+  
+        <!-- Info Card -->
+        <div class="alert alert-info d-flex gap-3 mb-4">
+          <i class="bi bi-info-circle-fill fs-4 mt-1"></i>
+          <div>
+            <strong>Document requis:</strong>
+            <p class="mb-0 small mt-1">{{ getDocumentLabel() }}</p>
+            <small class="text-muted">Formats acceptés: JPG, PNG, PDF — Max 5MB</small>
+          </div>
+        </div>
+  
+        <!-- Pending message -->
+        <div *ngIf="customer.verificationStatus === 'PENDING'"
+             class="alert alert-warning d-flex gap-3 mb-4">
+          <i class="bi bi-clock-fill fs-4 mt-1"></i>
+          <div>
+            <strong>Document en cours de vérification</strong>
+            <p class="mb-0 small">Votre document a été soumis et est en cours d'examen par notre équipe.</p>
+          </div>
+        </div>
+  
+        <!-- Rejected message -->
+        <div *ngIf="customer.verificationStatus === 'REJECTED'"
+             class="alert alert-danger d-flex gap-3 mb-4">
+          <i class="bi bi-x-circle-fill fs-4 mt-1"></i>
+          <div>
+            <strong>Document rejeté</strong>
+            <p class="mb-0 small">Votre document a été rejeté. Veuillez soumettre un nouveau document.</p>
+          </div>
+        </div>
+  
+        <!-- Success -->
+        <div *ngIf="uploadSuccess" class="alert alert-success d-flex gap-2 mb-4">
+          <i class="bi bi-check-circle-fill"></i>
+          Document soumis avec succès! En attente de vérification.
+        </div>
+  
+        <!-- Error -->
+        <div *ngIf="uploadError" class="alert alert-danger d-flex gap-2 mb-4">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          {{ uploadError }}
+        </div>
+  
+        <!-- Upload Zone -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3">Télécharger votre document</h6>
+  
+            <div class="border-2 border-dashed rounded-3 p-4 text-center mb-3"
+                 style="border: 2px dashed #dee2e6; cursor: pointer;"
+                 (click)="fileInput.click()">
+              <i class="bi bi-cloud-upload fs-1 text-muted d-block mb-2"></i>
+              <p class="text-muted mb-1">Cliquez pour sélectionner un fichier</p>
+              <small class="text-muted">JPG, PNG ou PDF — Max 5MB</small>
+            </div>
+  
+            <input #fileInput type="file" class="d-none"
+                   accept=".jpg,.jpeg,.png,.pdf"
+                   (change)="onFileSelected($event)">
+  
+            <!-- File Selected -->
+            <div *ngIf="selectedFile" class="d-flex align-items-center gap-3 p-3 bg-light rounded-3 mb-3">
+              <i class="bi fs-3"
+                 [class.bi-file-image-fill]="selectedFile.type.startsWith('image/')"
+                 [class.bi-file-pdf-fill]="selectedFile.type === 'application/pdf'"
+                 [class.text-primary]="selectedFile.type.startsWith('image/')"
+                 [class.text-danger]="selectedFile.type === 'application/pdf'">
+              </i>
+              <div>
+                <p class="fw-semibold mb-0">{{ selectedFile.name }}</p>
+                <small class="text-muted">{{ (selectedFile.size / 1024).toFixed(1) }} KB</small>
+              </div>
+            </div>
+  
+            <!-- Image Preview -->
+            <div *ngIf="filePreview" class="text-center mb-3">
+              <img [src]="filePreview" class="img-thumbnail" style="max-height: 200px;">
+            </div>
+  
+            <button class="btn btn-primary w-100 btn-lg" (click)="submitVerification()"
+                    [disabled]="!selectedFile || uploadLoading">
+              <span *ngIf="uploadLoading" class="spinner-border spinner-border-sm me-2"></span>
+              <i *ngIf="!uploadLoading" class="bi bi-send-fill me-2"></i>
+              Soumettre le document
+            </button>
+          </div>
+        </div>
+  
+      </div>
+  
+    </div>
+  
+  </div>

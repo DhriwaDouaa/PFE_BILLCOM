@@ -1,0 +1,65 @@
+<div class="p-4">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-star-fill text-primary fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">Mes Abonnements</h3>
+        <p class="text-muted mb-0">Historique de vos souscriptions</p>
+      </div>
+    </div>
+  
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm border-start border-primary border-4">
+          <div class="card-body py-2">
+            <p class="text-muted small mb-0">Total souscriptions</p>
+            <h4 class="fw-bold mb-0 text-primary">{{ payments.length }}</h4>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm border-start border-success border-4">
+          <div class="card-body py-2">
+            <p class="text-muted small mb-0">Total dépensé</p>
+            <h4 class="fw-bold mb-0 text-success">{{ getTotalSpent().toFixed(3) }} TND</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+  
+    <!-- Empty -->
+    <div *ngIf="!loading && payments.length === 0" class="text-center py-5 text-muted">
+      <i class="bi bi-star fs-1 d-block mb-2"></i>
+      Aucun abonnement trouvé
+    </div>
+  
+    <!-- Cards -->
+    <div class="row g-4" *ngIf="!loading && payments.length > 0">
+      <div class="col-md-4" *ngFor="let p of payments">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center p-4">
+            <i class="bi {{ getPlanIcon(p.paymentMethod) }} fs-1 text-{{ getPlanColor(p.paymentMethod) }} d-block mb-2"></i>
+            <h5 class="fw-bold">Plan {{ getPlanName(p.paymentMethod) }}</h5>
+            <h4 class="fw-bold text-{{ getPlanColor(p.paymentMethod) }} mb-3">
+              {{ (p.amount ?? 0).toFixed(3) }} TND
+            </h4>
+            <p class="text-muted small mb-1">
+              <i class="bi bi-calendar3 me-1"></i>
+              {{ p.paymentDate | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+            <span class="badge bg-success mt-2">{{ p.status }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div>

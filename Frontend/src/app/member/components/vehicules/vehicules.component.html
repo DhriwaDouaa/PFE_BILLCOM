@@ -1,0 +1,200 @@
+<!-- ======= DEMANDER UN VÉHICULE ======= -->
+<hr class="my-4">
+<div class="d-flex align-items-center gap-3 mb-4">
+  <div class="bg-success bg-opacity-10 p-3 rounded-3">
+    <i class="bi bi-geo-alt-fill text-success fs-2"></i>
+  </div>
+  <div>
+    <h3 class="fw-bold mb-0">Demander un véhicule</h3>
+    <p class="text-muted mb-0">Localisez-vous et le Smart Car viendra vous chercher</p>
+  </div>
+</div>
+
+<!-- Solde actuel -->
+<div class="card border-0 shadow-sm border-start border-primary border-4 mb-4" style="max-width:300px">
+  <div class="card-body py-2">
+    <p class="text-muted small mb-0">Votre solde</p>
+    <h4 class="fw-bold mb-0 text-primary">{{ customerBalance.toFixed(3) }} TND</h4>
+  </div>
+</div>
+
+<!-- Error Message -->
+<div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-4">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  {{ errorMessage }}
+</div>
+
+<!-- Status Alert -->
+<div *ngIf="statusMessage" class="alert alert-info d-flex align-items-center gap-2 mb-4">
+  <div class="spinner-border spinner-border-sm"></div>
+  {{ statusMessage }}
+</div>
+
+<!-- Map -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body p-0">
+    <div id="map" style="height: 450px; border-radius: 12px;"></div>
+  </div>
+</div>
+
+<!-- Estimation -->
+<div class="card border-0 shadow-sm mb-4" *ngIf="estimatedDistance > 0">
+  <div class="card-body">
+    <h6 class="fw-bold mb-3"><i class="bi bi-calculator me-2 text-primary"></i>Estimation du trajet</h6>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card border-0 bg-light">
+          <div class="card-body py-2 text-center">
+            <p class="text-muted small mb-0">Distance</p>
+            <h5 class="fw-bold mb-0">{{ estimatedDistance.toFixed(2) }} km</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 bg-light">
+          <div class="card-body py-2 text-center">
+            <p class="text-muted small mb-0">Tarif</p>
+            <h5 class="fw-bold mb-0">0.900 TND/km</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 bg-light">
+          <div class="card-body py-2 text-center">
+            <p class="text-muted small mb-0">Prix estimé</p>
+            <h5 class="fw-bold mb-0 text-success">{{ estimatedPrice.toFixed(3) }} TND</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IoT Info -->
+<div class="row g-3 mb-4" *ngIf="iotData && carCalled">
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm border-start border-success border-4">
+      <div class="card-body py-2">
+        <p class="text-muted small mb-0">Vitesse</p>
+        <h5 class="fw-bold mb-0 text-success">{{ iotData.speed }} km/h</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm border-start border-warning border-4">
+      <div class="card-body py-2">
+        <p class="text-muted small mb-0">Batterie</p>
+        <h5 class="fw-bold mb-0 text-warning">{{ iotData.battery }}%</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm border-start border-info border-4">
+      <div class="card-body py-2">
+        <p class="text-muted small mb-0">Température</p>
+        <h5 class="fw-bold mb-0 text-info">{{ iotData.temperature }}°C</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm border-start border-danger border-4">
+      <div class="card-body py-2">
+        <p class="text-muted small mb-0">Obstacle</p>
+        <h5 class="fw-bold mb-0 text-danger">{{ iotData.obstacle ? 'Détecté' : 'Aucun' }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Services disponibles avant confirmation -->
+<div class="card border-0 shadow-sm mb-4" *ngIf="showConfirmation">
+  <div class="card-body">
+    <h6 class="fw-bold mb-3">Services disponibles à bord</h6>
+    <div class="row g-2">
+      <div class="col-md-3 col-6" *ngFor="let s of services">
+        <div class="card border-0 bg-light text-center py-2">
+          <i class="bi {{ s.icon }} fs-4 text-{{ s.color }}"></i>
+          <small class="fw-bold d-block mt-1">{{ s.name }}</small>
+          <small class="text-muted">{{ s.price }} TND/min</small>
+        </div>
+      </div>
+      <div class="col-md-3 col-6" *ngFor="let s of eventServices">
+        <div class="card border-0 bg-light text-center py-2">
+          <i class="bi {{ s.icon }} fs-4 text-{{ s.color }}"></i>
+          <small class="fw-bold d-block mt-1">{{ s.name }}</small>
+          <small class="text-muted">{{ s.price }} TND/{{ s.unit }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Buttons -->
+<div class="d-flex gap-3 flex-wrap mb-4">
+  <button class="btn btn-success btn-lg px-5" (click)="demanderVehicule()" [disabled]="carCalled || !!statusMessage">
+    <i class="bi bi-geo-alt-fill me-2"></i>Demander un véhicule
+  </button>
+  <button class="btn btn-primary btn-lg px-5" (click)="confirmerDemande()" *ngIf="showConfirmation">
+    <i class="bi bi-check-circle me-2"></i>Confirmer ({{ estimatedPrice.toFixed(3) }} TND)
+  </button>
+  <button class="btn btn-outline-danger btn-lg px-4" (click)="annulerDemande()" *ngIf="carCalled || showConfirmation">
+    <i class="bi bi-x-circle me-2"></i>Annuler
+  </button>
+</div>
+
+<!-- ======= SERVICES PANEL ======= -->
+<div *ngIf="carCalled" class="mt-2">
+  <hr>
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-primary bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-grid-fill text-primary fs-2"></i>
+    </div>
+    <div>
+      <h4 class="fw-bold mb-0">Services à bord</h4>
+      <p class="text-muted mb-0">Activez les services pendant votre trajet</p>
+    </div>
+  </div>
+
+  <!-- SESSION Services -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3" *ngFor="let s of services">
+      <div class="card border-0 shadow-sm h-100"
+           [class.border]="s.active"
+           [class.border-success]="s.active"
+           [class.border-2]="s.active">
+        <div class="card-body text-center py-3">
+          <i class="bi {{ s.icon }} fs-2 text-{{ s.color }} mb-2 d-block"></i>
+          <h6 class="fw-bold mb-1">{{ s.name }}</h6>
+          <small class="text-muted d-block mb-2">{{ s.price }} TND/min</small>
+          <button class="btn btn-sm w-100"
+            [class.btn-success]="s.active"
+            [class.btn-outline-secondary]="!s.active"
+            (click)="toggleService(s)">
+            <i class="bi me-1"
+               [class.bi-pause-fill]="s.active"
+               [class.bi-play-fill]="!s.active"></i>
+            {{ s.active ? 'Actif' : 'Activer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENT Services -->
+  <h6 class="fw-bold mb-3">Commandes à la demande</h6>
+  <div class="row g-3">
+    <div class="col-md-4" *ngFor="let s of eventServices">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center py-3">
+          <i class="bi {{ s.icon }} fs-2 text-{{ s.color }} mb-2 d-block"></i>
+          <h6 class="fw-bold mb-1">{{ s.name }}</h6>
+          <small class="text-muted d-block mb-2">{{ s.price }} TND/{{ s.unit }}</small>
+          <div class="d-flex align-items-center justify-content-center gap-2">
+            <span class="badge bg-secondary fs-6">{{ s.quantity }}</span>
+            <button class="btn btn-sm btn-outline-primary" (click)="commanderEvent(s)">
+              <i class="bi bi-plus-circle me-1"></i>Commander
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

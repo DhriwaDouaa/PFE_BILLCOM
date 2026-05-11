@@ -1,0 +1,15 @@
+.card {
+  border-radius: 12px !important;
+}
+
+.table thead th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.table td {
+  white-space: nowrap;
+  font-size: 0.9rem;
+}

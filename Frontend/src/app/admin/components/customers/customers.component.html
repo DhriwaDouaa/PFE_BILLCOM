@@ -1,0 +1,214 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <div class="bg-info bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-people-fill text-info fs-2"></i>
+    </div>
+    <div>
+      <h3 class="fw-bold mb-0">Gestion Customers</h3>
+      <p class="text-muted mb-0">{{ filteredCustomers.length }} client(s) trouvé(s)</p>
+    </div>
+  </div>
+
+  <!-- Règles BSS -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-3">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-trophy-fill text-success fs-4"></i>
+            <div>
+              <small class="text-muted">SPORTIF</small>
+              <p class="mb-0 fw-bold text-success">-10% remise</p>
+            </div>
+          </div>
+          <p class="text-muted small mb-0">
+            <i class="bi bi-star-fill text-warning me-1"></i>
+            En tant que sportif, bénéficiez de <strong>10% de réduction</strong> sur tous vos services !
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-primary border-4">
+        <div class="card-body py-3">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-mortarboard-fill text-primary fs-4"></i>
+            <div>
+              <small class="text-muted">ETUDIANT</small>
+              <p class="mb-0 fw-bold text-primary">-15% remise</p>
+            </div>
+          </div>
+          <p class="text-muted small mb-0">
+            <i class="bi bi-star-fill text-warning me-1"></i>
+            Offre spéciale étudiants ! <strong>15% de réduction</strong> sur tous les services !
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-3">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-shield-fill-exclamation text-danger fs-4"></i>
+            <div>
+              <small class="text-muted">MINEUR</small>
+              <p class="mb-0 fw-bold text-danger">WiFi bloqué 🚫</p>
+            </div>
+          </div>
+          <p class="text-muted small mb-0">
+            <i class="bi bi-lock-fill text-danger me-1"></i>
+            Pour votre sécurité, l'accès WiFi est restreint. Autres services disponibles !
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recherche -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-search me-1"></i>Nom, Code Client ou Téléphone
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="search()"
+            placeholder="Ex: Ahmed, CLT-2026-001 ou +216...">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-gear me-1"></i>Service utilisé
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="selectedService"
+            (ngModelChange)="search()"
+            placeholder="Ex: WiFi, GPS, Cafe...">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-person-badge me-1"></i>Type client
+          </label>
+          <select class="form-select" [(ngModel)]="selectedType" (ngModelChange)="search()">
+            <option value="">Tous les types</option>
+            <option value="STANDARD">Standard</option>
+            <option value="SPORTIF">Sportif</option>
+            <option value="ETUDIANT">Etudiant</option>
+            <option value="MINEUR">Mineur</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100" (click)="clearSearch()">
+            <i class="bi bi-x-circle me-1"></i>Effacer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-info"></div>
+    <p class="mt-2 text-muted">Chargement...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Code Client</th>
+            <th>Nom</th>
+            <th>Téléphone</th>
+            <th>Age</th>
+            <th>Type Client</th>
+            <th>Statut</th>
+            <th>Balance (DT)</th>
+            <th>Services Utilisés</th>
+            <th>Total Brut (DT)</th>
+            <th>Remise</th>
+            <th>Total Net (DT)</th>
+            <th>Restrictions</th>
+            <th>Détail</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filteredCustomers">
+            <td><span class="badge bg-secondary">{{ c.codeClient }}</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-10"
+                     style="width:35px;height:35px;">
+                  <i class="bi text-info" [class]="getTypeIcon(c.clientType)"></i>
+                </div>
+                <strong>{{ c.name }}</strong>
+              </div>
+            </td>
+            <td><small><i class="bi bi-phone me-1"></i>{{ c.phone || '-' }}</small></td>
+            <td>{{ c.age || '-' }} ans</td>
+            <td>
+              <span class="badge" [class]="getTypeBadgeClass(c.clientType)">
+                <i class="bi me-1" [class]="getTypeIcon(c.clientType)"></i>
+                {{ c.clientType }}
+              </span>
+            </td>
+            <td>
+              <span class="badge"
+                [class.bg-success]="c.status === 'ACTIVE'"
+                [class.bg-danger]="c.status !== 'ACTIVE'">
+                {{ c.status }}
+              </span>
+            </td>
+            <td>{{ c.balance | number:'1.2-2' }}</td>
+            <td>
+              <span *ngFor="let sid of getUsedServices(c.custId)"
+                    class="badge bg-secondary me-1">
+                {{ getServiceName(sid) }}
+              </span>
+              <span *ngIf="getUsedServices(c.custId).length === 0" class="text-muted">-</span>
+            </td>
+            <td>{{ getCdrTotal(c.custId) | number:'1.2-2' }}</td>
+            <td>
+              <span *ngIf="getDiscount(c.clientType) > 0" class="badge bg-warning text-dark">
+                -{{ getDiscount(c.clientType) }}%
+              </span>
+              <span *ngIf="getDiscount(c.clientType) === 0" class="text-muted">-</span>
+            </td>
+            <td>
+              <strong class="text-primary">
+                {{ getAmountAfterDiscount(c.custId, c.clientType) | number:'1.2-2' }}
+              </strong>
+            </td>
+            <td>
+              <span *ngIf="isWifiBlocked(c.clientType)" class="badge bg-danger">
+                🚫 WiFi bloqué
+              </span>
+              <span *ngIf="!isWifiBlocked(c.clientType)" class="text-muted">-</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-info" (click)="viewDetail(c.custId)"
+                      title="Voir fiche détaillée">
+                <i class="bi bi-eye-fill"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredCustomers.length === 0">
+            <td colspan="13" class="text-center py-5 text-muted">
+              <i class="bi bi-search fs-1 d-block mb-2"></i>
+              Aucun customer trouvé
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

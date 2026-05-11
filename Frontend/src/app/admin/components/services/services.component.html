@@ -1,0 +1,243 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="bg-info bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-gear-fill text-info fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">Catalogue Services</h3>
+        <p class="text-muted mb-0">{{ filteredServices.length }} service(s) disponible(s)</p>
+      </div>
+    </div>
+    <!-- Toggle vue -->
+    <div class="btn-group">
+      <button class="btn btn-sm"
+              [class.btn-info]="viewMode === 'cards'"
+              [class.btn-outline-info]="viewMode !== 'cards'"
+              (click)="viewMode = 'cards'">
+        <i class="bi bi-grid-fill me-1"></i>Cards
+      </button>
+      <button class="btn btn-sm"
+              [class.btn-info]="viewMode === 'table'"
+              [class.btn-outline-info]="viewMode !== 'table'"
+              (click)="viewMode = 'table'">
+        <i class="bi bi-table me-1"></i>Tableau
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Total Services</p>
+          <h4 class="fw-bold mb-0 text-info">{{ services.length }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-success border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Actifs</p>
+          <h4 class="fw-bold mb-0 text-success">{{ getActiveCount() }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Inclus gratuit</p>
+          <h4 class="fw-bold mb-0 text-warning">{{ getIncludedCount() }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-primary border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Résultats filtrés</p>
+          <h4 class="fw-bold mb-0 text-primary">{{ filteredServices.length }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recherche -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-search me-1"></i>Rechercher
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="search()"
+            placeholder="Nom, code (SRV-WIFI-001) ou description...">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-tag me-1"></i>Type
+          </label>
+          <select class="form-select" [(ngModel)]="selectedType" (ngModelChange)="search()">
+            <option value="">Tous les types</option>
+            <option value="CONNECTIVITY">Connectivity</option>
+            <option value="COMFORT">Comfort</option>
+            <option value="NAVIGATION">Navigation</option>
+            <option value="ENTERTAINMENT">Entertainment</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-credit-card me-1"></i>Facturation
+          </label>
+          <select class="form-select" [(ngModel)]="selectedBilling" (ngModelChange)="search()">
+            <option value="">Tous les modèles</option>
+            <option value="FREEMIUM">Freemium</option>
+            <option value="SESSION">Session</option>
+            <option value="EVENT">Événement</option>
+            <option value="INCLUDED">Inclus</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100" (click)="clearSearch()">
+            <i class="bi bi-x-circle me-1"></i>Effacer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-info"></div>
+    <p class="text-muted mt-2">Chargement services...</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+  <!-- Vue Cards -->
+  <div *ngIf="!loading && !error && viewMode === 'cards'" class="row g-4">
+    <div *ngFor="let s of filteredServices" class="col-md-4">
+      <div class="card border-0 shadow-sm h-100 service-card">
+        <div class="card-header border-0 pb-0 pt-3 px-3">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="d-flex align-items-center gap-2">
+              <div class="rounded-3 p-2" [ngClass]="getTypeBgColor(s.serviceType) + ' bg-opacity-10'">
+                <i class="bi fs-4"[ngClass]="[getServiceIcon(s), getServiceColor(s.serviceType)]"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0">{{ s.serviceName }}</h6>
+                <small class="text-muted">{{ s.codeService }}</small>
+              </div>
+            </div>
+            <span class="badge" [ngClass]="getBillingBadge(s.billingModel)">
+              {{ getBillingLabel(s.billingModel) }}
+            </span>
+          </div>
+        </div>
+        <div class="card-body px-3">
+          <p class="text-muted small mb-3">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ s.description }}
+          </p>
+          <div class="border-top pt-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="badge bg-light text-dark border">
+                <i class="bi bi-tag me-1"></i>{{ s.serviceType }}
+              </span>
+              <div class="text-end">
+                <span *ngIf="s.billingModel !== 'INCLUDED'" class="fw-bold text-primary">
+                  {{ s.unitPrice | number:'1.4-4' }} DT
+                  <small class="text-muted fw-normal">/{{ s.unit }}</small>
+                </span>
+                <span *ngIf="s.billingModel === 'INCLUDED'" class="badge bg-success">
+                  ✅ Gratuit
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer border-0 bg-transparent px-3 pb-3">
+          <span class="badge"
+            [class.bg-success]="s.status === 'ACTIVE'"
+            [class.bg-danger]="s.status !== 'ACTIVE'">
+            {{ s.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="filteredServices.length === 0" class="col-12 text-center py-5 text-muted">
+      <i class="bi bi-search fs-1 d-block mb-2"></i>
+      Aucun service trouvé
+    </div>
+  </div>
+
+  <!-- Vue Tableau -->
+  <div *ngIf="!loading && !error && viewMode === 'table'" class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Code</th>
+            <th>Nom Service</th>
+            <th>Description</th>
+            <th>Type</th>
+            <th>Facturation</th>
+            <th>Prix Unitaire (DT)</th>
+            <th>Unité</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of filteredServices">
+            <td><span class="badge bg-secondary">{{ s.codeService }}</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi fs-5"
+   [ngClass]="[getServiceIcon(s), getTypeColor(s.serviceType)]"></i>
+                <strong>{{ s.serviceName }}</strong>
+              </div>
+            </td>
+            <td><small class="text-muted">{{ s.description }}</small></td>
+            <td>
+              <span class="badge" [ngClass]="getTypeBgColor(s.serviceType)">
+                {{ s.serviceType }}
+              </span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="getBillingBadge(s.billingModel)">
+                {{ getBillingLabel(s.billingModel) }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="s.billingModel !== 'INCLUDED'" class="fw-bold text-primary">
+                {{ s.unitPrice | number:'1.4-4' }}
+              </span>
+              <span *ngIf="s.billingModel === 'INCLUDED'" class="badge bg-success">Gratuit</span>
+            </td>
+            <td>{{ s.unit }}</td>
+            <td>
+              <span class="badge"
+                [class.bg-success]="s.status === 'ACTIVE'"
+                [class.bg-danger]="s.status !== 'ACTIVE'">
+                {{ s.status }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredServices.length === 0">
+            <td colspan="8" class="text-center text-muted py-4">
+              Aucun service trouvé
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

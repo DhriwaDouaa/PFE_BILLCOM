@@ -1,0 +1,17 @@
+.progress {
+  border-radius: 10px;
+  background: rgba(0,0,0,0.05);
+}
+
+.progress-bar {
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+.card {
+  border-radius: 12px !important;
+}
+
+code {
+  font-size: 0.8rem;
+}

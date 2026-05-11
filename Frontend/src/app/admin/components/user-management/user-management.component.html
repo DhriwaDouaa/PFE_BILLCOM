@@ -1,0 +1,213 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="bg-danger bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-person-gear text-danger fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">User Management</h3>
+        <p class="text-muted mb-0">Gestion des utilisateurs — ADMIN seulement</p>
+      </div>
+    </div>
+    <button class="btn btn-danger px-4" (click)="openModal()">
+      <i class="bi bi-plus-lg me-2"></i>Nouvel Utilisateur
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-danger border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Total Users</p>
+          <h4 class="fw-bold mb-0">{{ users.length }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Supervisors</p>
+          <h4 class="fw-bold mb-0">{{ getCount('SUPERVISOR') }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-primary border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Agents</p>
+          <h4 class="fw-bold mb-0">{{ getCount('AGENT') }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Members</p>
+          <h4 class="fw-bold mb-0">{{ getCount('MEMBER') }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message -->
+  <div *ngIf="message" class="alert"
+       [class.alert-success]="msgType==='success'"
+       [class.alert-danger]="msgType==='error'">
+    {{ message }}
+  </div>
+
+  <!-- Recherche -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-5">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-search me-1"></i>Rechercher
+          </label>
+          <input type="text" class="form-control"
+                 [(ngModel)]="searchTerm"
+                 (ngModelChange)="search()"
+                 placeholder="Username ou email...">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-person-badge me-1"></i>Rôle
+          </label>
+          <select class="form-select" [(ngModel)]="selectedRole" (ngModelChange)="search()">
+            <option value="">Tous les rôles</option>
+            <option value="ADMIN">Admin</option>
+            <option value="SUPERVISOR">Supervisor</option>
+            <option value="AGENT">Agent</option>
+            <option value="MEMBER">Member</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-outline-secondary w-100" (click)="clearSearch()">
+            <i class="bi bi-x-circle me-1"></i>Effacer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-danger"></div>
+    <p class="text-muted mt-2">Chargement...</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>#ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Client ID</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of filteredUsers">
+            <td><span class="badge bg-secondary">#{{ u.userId }}</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light"
+                     style="width:35px;height:35px;">
+                  <i class="bi" [class]="getRoleIcon(u.role)"
+                     [class.text-danger]="u.role==='ADMIN'"
+                     [class.text-warning]="u.role==='SUPERVISOR'"
+                     [class.text-primary]="u.role==='AGENT'"
+                     [class.text-info]="u.role==='MEMBER'"></i>
+                </div>
+                <strong>{{ u.username }}</strong>
+              </div>
+            </td>
+            <td><small>{{ u.email }}</small></td>
+            <td>
+              <span class="badge" [class]="getRoleBadgeClass(u.role)">
+                <i class="bi me-1" [class]="getRoleIcon(u.role)"></i>
+                {{ u.role }}
+              </span>
+            </td>
+            <td>
+              <span *ngIf="u.custId" class="badge bg-info">Client #{{ u.custId }}</span>
+              <span *ngIf="!u.custId" class="text-muted">-</span>
+            </td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="edit(u)">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" (click)="delete(u.userId)"
+                      [disabled]="u.role === 'ADMIN'">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredUsers.length === 0">
+            <td colspan="6" class="text-center py-5 text-muted">
+              <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+              Aucun utilisateur trouvé
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade show d-block" *ngIf="showModal" style="background:rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            <i class="bi bi-person-gear text-danger me-2"></i>
+            {{ editMode ? 'Modifier' : 'Nouvel' }} Utilisateur
+          </h5>
+          <button class="btn-close" (click)="closeModal()"></button>
+        </div>
+        <div class="modal-body px-4">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username *</label>
+            <input class="form-control" [(ngModel)]="form.username" placeholder="username">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Email *</label>
+            <input type="email" class="form-control" [(ngModel)]="form.email" placeholder="email&#64;bss.com">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Mot de passe *</label>
+            <input type="password" class="form-control" [(ngModel)]="form.password" placeholder="••••••••">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Rôle *</label>
+            <select class="form-select" [(ngModel)]="form.role">
+              <option value="ADMIN">Admin</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="AGENT">Agent</option>
+              <option value="MEMBER">Member</option>
+            </select>
+          </div>
+          <div class="mb-3" *ngIf="form.role === 'MEMBER'">
+            <label class="form-label fw-semibold">Client ID</label>
+            <input type="number" class="form-control" [(ngModel)]="form.custId" placeholder="ID du client">
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+          <button class="btn btn-danger px-4" (click)="save()" [disabled]="saving">
+            <span *ngIf="saving" class="spinner-border spinner-border-sm me-1"></span>
+            {{ editMode ? 'Mettre à jour' : 'Créer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

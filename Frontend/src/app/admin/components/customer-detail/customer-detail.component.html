@@ -1,0 +1,241 @@
+<div class="p-4">
+
+  <!-- Header -->
+  <div class="d-flex align-items-center gap-3 mb-4">
+    <button class="btn btn-outline-secondary" (click)="goBack()">
+      <i class="bi bi-arrow-left me-1"></i>Retour
+    </button>
+    <div class="bg-info bg-opacity-10 p-3 rounded-3">
+      <i class="bi bi-person-lines-fill text-info fs-2"></i>
+    </div>
+    <div>
+      <h3 class="fw-bold mb-0">Fiche Client</h3>
+      <p class="text-muted mb-0">Détails complets du client</p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-info"></div>
+    <p class="text-muted mt-2">Chargement...</p>
+  </div>
+
+  <div *ngIf="!loading && customer">
+
+    <!-- Infos principales -->
+    <div class="row g-4 mb-4">
+
+      <!-- Profil -->
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body text-center p-4">
+            <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3"
+                 style="width:80px;height:80px;">
+              <i class="bi fs-1 text-info" [class]="getTypeIcon()"></i>
+            </div>
+            <h4 class="fw-bold mb-1">{{ customer.name }}</h4>
+            <p class="text-muted mb-2">{{ customer.codeClient }}</p>
+            <span class="badge fs-6 mb-2" [class]="getTypeBadgeClass()">
+              {{ customer.clientType }}
+            </span>
+            <br>
+            <span class="badge"
+              [class.bg-success]="customer.status === 'ACTIVE'"
+              [class.bg-danger]="customer.status !== 'ACTIVE'">
+              {{ customer.status }}
+            </span>
+            <hr>
+            <ul class="list-unstyled text-start">
+              <li class="mb-2">
+                <i class="bi bi-phone text-muted me-2"></i>
+                {{ customer.phone || 'Non renseigné' }}
+              </li>
+              <li class="mb-2">
+                <i class="bi bi-calendar text-muted me-2"></i>
+                {{ customer.age }} ans
+              </li>
+              <li class="mb-2">
+                <i class="bi bi-file-text text-muted me-2"></i>
+                Contrat : <strong>{{ getContractType() }}</strong>
+              </li>
+              <li *ngIf="getDiscount() > 0">
+                <i class="bi bi-tag text-success me-2"></i>
+                Remise : <strong class="text-success">-{{ getDiscount() }}%</strong>
+              </li>
+              <li *ngIf="customer.clientType === 'MINEUR'">
+                <i class="bi bi-wifi-off text-danger me-2"></i>
+                <span class="text-danger">WiFi bloqué</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs client -->
+      <div class="col-md-8">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm border-start border-success border-4">
+              <div class="card-body">
+                <p class="text-muted small text-uppercase mb-1">Balance</p>
+                <h3 class="fw-bold text-success mb-0">{{ customer.balance | number:'1.2-2' }} DT</h3>
+                <small class="text-muted">Solde disponible</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm border-start border-info border-4">
+              <div class="card-body">
+                <p class="text-muted small text-uppercase mb-1">Total CDR</p>
+                <h3 class="fw-bold text-info mb-0">{{ cdrs.length }}</h3>
+                <small class="text-muted">Usages enregistrés</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm border-start border-warning border-4">
+              <div class="card-body">
+                <p class="text-muted small text-uppercase mb-1">Total Brut (DT)</p>
+                <h3 class="fw-bold text-warning mb-0">{{ getTotalBrut() | number:'1.2-2' }}</h3>
+                <small class="text-muted">Avant remise</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card border-0 shadow-sm border-start border-primary border-4">
+              <div class="card-body">
+                <p class="text-muted small text-uppercase mb-1">Total Net (DT)</p>
+                <h3 class="fw-bold text-primary mb-0">{{ getTotalNet() | number:'1.2-2' }}</h3>
+                <small class="text-success" *ngIf="getDiscount() > 0">
+                  Après -{{ getDiscount() }}% remise
+                </small>
+                <small class="text-muted" *ngIf="getDiscount() === 0">Pas de remise</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CDR Logs -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between">
+        <h5 class="fw-bold">
+          <i class="bi bi-activity text-info me-2"></i>
+          Historique CDR
+        </h5>
+        <span class="badge bg-info">{{ cdrs.length }} usage(s)</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>#CDR</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Durée</th>
+                <th>Distance</th>
+                <th>Options</th>
+                <th>Eco</th>
+                <th>Prix (DT)</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let cdr of cdrs">
+                <td><strong>#{{ cdr.cdrId }}</strong></td>
+                <td><span class="badge bg-secondary">{{ getServiceName(cdr.serviceId) }}</span></td>
+                <td>{{ cdr.sessionStart | date:'dd/MM/yyyy HH:mm' }}</td>
+                <td>{{ cdr.durationMin > 0 ? cdr.durationMin + ' min' : '-' }}</td>
+                <td>{{ cdr.distanceKm > 0 ? cdr.distanceKm + ' km' : '-' }}</td>
+                <td><small>{{ cdr.optionsActivated || '-' }}</small></td>
+                <td>
+                  <span *ngIf="cdr.ecoDriving === 1" class="badge bg-success">♻️ Eco</span>
+                  <span *ngIf="cdr.rfidTag" class="badge bg-success ms-1">🌿 Bio</span>
+                  <span *ngIf="cdr.ecoDriving !== 1 && !cdr.rfidTag" class="text-muted">-</span>
+                </td>
+                <td>
+                  <strong *ngIf="cdr.status === 'RATED'" class="text-primary">
+                    {{ cdr.rawAmount | number:'1.2-2' }}
+                  </strong>
+                  <span *ngIf="cdr.status !== 'RATED'" class="text-muted">En attente</span>
+                </td>
+                <td>
+                  <span class="badge"
+                    [class.bg-success]="cdr.status === 'RATED'"
+                    [class.bg-warning]="cdr.status === 'PENDING'">
+                    {{ cdr.status }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="cdrs.length === 0">
+                <td colspan="9" class="text-center text-muted py-3">Aucun CDR</td>
+              </tr>
+            </tbody>
+            <tfoot *ngIf="cdrs.length > 0" class="table-light">
+              <tr>
+                <td colspan="7" class="fw-bold text-end">Total :</td>
+                <td class="fw-bold text-primary">{{ getTotalNet() | number:'1.2-2' }}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Factures -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-transparent border-0 pt-3 pb-0 d-flex justify-content-between">
+        <h5 class="fw-bold">
+          <i class="bi bi-receipt text-warning me-2"></i>
+          Factures
+        </h5>
+        <span class="badge bg-warning text-dark">{{ invoices.length }} facture(s)</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>#Facture</th>
+                <th>Période Début</th>
+                <th>Période Fin</th>
+                <th>Montant Brut (DT)</th>
+                <th>Remise (DT)</th>
+                <th>Taxes (DT)</th>
+                <th>Total TTC (DT)</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inv of invoices">
+                <td><strong>#{{ inv.invoiceId }}</strong></td>
+                <td>{{ inv.periodStart | date:'dd/MM/yyyy' }}</td>
+                <td>{{ inv.periodEnd | date:'dd/MM/yyyy' }}</td>
+                <td>{{ inv.rawAmount | number:'1.2-2' }}</td>
+                <td class="text-success">-{{ inv.discountAmount | number:'1.2-2' }}</td>
+                <td class="text-danger">+{{ inv.taxAmount | number:'1.2-2' }}</td>
+                <td><strong class="text-primary">{{ inv.totalAmount | number:'1.2-2' }}</strong></td>
+                <td>
+                  <span class="badge"
+                    [class.bg-success]="inv.status === 'PAID'"
+                    [class.bg-warning]="inv.status === 'PENDING'"
+                    [class.bg-danger]="inv.status === 'CANCELLED'">
+                    {{ inv.status }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="invoices.length === 0">
+                <td colspan="8" class="text-center text-muted py-3">Aucune facture</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
