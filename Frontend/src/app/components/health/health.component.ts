@@ -33,7 +33,7 @@ import { ApiService } from '../../services/api.service';
                 <h3 class="fw-bold" [class]="status === 'UP' ? 'text-success' : 'text-danger'">
                   API {{ status }}
                 </h3>
-                <p class="text-muted">Spring Boot sur http://localhost:8080</p>
+                <p class="text-muted">Spring Boot sur http://164.92.189.67:8080</p>
               </div>
               <button class="btn btn-outline-primary mt-3" (click)="check()">
                 <i class="bi bi-arrow-clockwise me-1"></i>Vérifier à nouveau

@@ -45,6 +45,7 @@ com/example/timesten/service/CustomerService.class
 com/example/timesten/model/Payment$PaymentBuilder.class
 com/example/timesten/model/Customer$CustomerBuilder.class
 com/example/timesten/repository/ServiceReviewRepository.class
+com/example/timesten/config/SecurityConfig.class
 com/example/timesten/repository/InvoiceRepository.class
 com/example/timesten/model/User.class
 com/example/timesten/model/IotData$IotDataBuilder.class

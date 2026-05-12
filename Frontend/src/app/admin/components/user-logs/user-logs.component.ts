@@ -28,7 +28,7 @@ export class UserLogsComponent implements OnInit {
 
   load() {
     this.loading = true;
-    this.http.get<any[]>('http://localhost:8080/api/user-logs').subscribe({
+    this.http.get<any[]>('/api/user-logs').subscribe({
       next: (data) => {
         // SUPERVISOR voit seulement les logs de son équipe (agents)
         if (this.currentRole === 'SUPERVISOR') {

@@ -28,13 +28,13 @@ export class MesServicesComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any>(`http://localhost:8080/api/customers/${this.custId}`).subscribe({
+    this.http.get<any>(`/api/customers/${this.custId}`).subscribe({
       next: (data) => { this.customer = data; }
     });
-    this.http.get<any[]>('http://localhost:8080/api/services').subscribe({
+    this.http.get<any[]>('/api/services').subscribe({
       next: (data) => { this.services = data; this.loading = false; }
     });
-    this.http.get<any[]>('http://localhost:8080/api/reviews').subscribe({
+    this.http.get<any[]>('/api/reviews').subscribe({
       next: (data) => { this.reviews = data; }
     });
   }
@@ -88,7 +88,7 @@ export class MesServicesComponent implements OnInit {
       rating: this.newRating,
       comment: this.newComment.trim()
     };
-    this.http.post<any>('http://localhost:8080/api/reviews', review).subscribe({
+    this.http.post<any>('/api/reviews', review).subscribe({
       next: (data) => {
         this.reviews.push(data);
         this.submitting = false;
@@ -101,7 +101,7 @@ export class MesServicesComponent implements OnInit {
 
   deleteReview(reviewId: number) {
     if (!confirm('Supprimer cet avis ?')) return;
-    this.http.delete(`http://localhost:8080/api/reviews/${reviewId}`).subscribe({
+    this.http.delete(`/api/reviews/${reviewId}`).subscribe({
       next: () => { this.reviews = this.reviews.filter(r => r.reviewId !== reviewId); },
       error: () => alert('Erreur lors de la suppression')
     });

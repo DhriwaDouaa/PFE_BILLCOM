@@ -159,13 +159,13 @@ services = [
   }
 
   loadStats() {
-    this.http.get<any[]>('http://localhost:8080/api/customers').subscribe({
+    this.http.get<any[]>('/api/customers').subscribe({
       next: (d) => this.animateNumber('statCustomers', d.length)
     });
-    this.http.get<any[]>('http://localhost:8080/api/services').subscribe({
+    this.http.get<any[]>('/api/services').subscribe({
       next: (d) => this.animateNumber('statServices', d.length)
     });
-    this.http.get<any[]>('http://localhost:8080/api/cdr-logs').subscribe({
+    this.http.get<any[]>('/api/cdr-logs').subscribe({
       next: (d) => this.animateNumber('statCdrs', d.length)
     });
   }
@@ -209,7 +209,7 @@ services = [
     }
     this.loading = true;
     this.error = '';
-    this.http.post<any>('http://localhost:8080/api/auth/login', {
+    this.http.post<any>('/api/auth/login', {
       email: this.email,
       password: this.password
     }).subscribe({

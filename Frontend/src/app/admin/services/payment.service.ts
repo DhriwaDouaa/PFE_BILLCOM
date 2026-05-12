@@ -5,7 +5,7 @@ import { Payment } from '../../shared/models/payment.model';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private url = 'http://localhost:8080/api/payments';
+  private url = '/api/payments';
 
   constructor(private http: HttpClient) {}
 

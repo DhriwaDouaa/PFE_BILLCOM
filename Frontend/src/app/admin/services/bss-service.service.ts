@@ -5,7 +5,7 @@ import { Service } from '../../shared/models/service.model';
 
 @Injectable({ providedIn: 'root' })
 export class BssServiceService {
-  private url = 'http://localhost:8080/api/services';
+  private url = '/api/services';
 
   constructor(private http: HttpClient) {}
 

@@ -23,7 +23,7 @@ export class InvoicesComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8080/api/invoices').subscribe({
+    this.http.get<any[]>('/api/invoices').subscribe({
       next: (data) => {
         this.invoices = data;
         this.filteredInvoices = data;
@@ -31,7 +31,7 @@ export class InvoicesComponent implements OnInit {
       }
     });
 
-    this.http.get<any[]>('http://localhost:8080/api/customers').subscribe({
+    this.http.get<any[]>('/api/customers').subscribe({
       next: (data) => { this.customers = data; }
     });
   }

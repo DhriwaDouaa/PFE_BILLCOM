@@ -29,6 +29,7 @@
 /home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/controller/UserLogController.java
 /home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/model/CdrLog.java
 /home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/repository/CdrLogRepository.java
+/home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/config/SecurityConfig.java
 /home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/repository/CustomerRepository.java
 /home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/repository/ServiceReviewRepository.java
 /home/med-amine-saafi/Desktop/PFE/My_work/My_Projects/smartcar/software/Backend/src/main/java/com/example/timesten/repository/ServiceRepository.java

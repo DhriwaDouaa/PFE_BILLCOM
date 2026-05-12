@@ -22,7 +22,7 @@ export class PaymentsComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8080/api/payments').subscribe({
+    this.http.get<any[]>('/api/payments').subscribe({
       next: (data) => {
         this.payments = data;
         this.filteredPayments = data;
@@ -30,7 +30,7 @@ export class PaymentsComponent implements OnInit {
       }
     });
 
-    this.http.get<any[]>('http://localhost:8080/api/customers').subscribe({
+    this.http.get<any[]>('/api/customers').subscribe({
       next: (data) => { this.customers = data; }
     });
   }

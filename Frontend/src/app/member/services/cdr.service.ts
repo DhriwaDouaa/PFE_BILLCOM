@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CdrService {
-  private url = 'http://localhost:8080/api/cdr-logs';
+  private url = '/api/cdr-logs';
 
   constructor(private http: HttpClient) {}
 

@@ -33,10 +33,10 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     Promise.all([
-      this.http.get<any[]>('http://localhost:8080/api/customers').toPromise(),
-      this.http.get<any[]>('http://localhost:8080/api/cdr-logs').toPromise(),
-      this.http.get<any[]>('http://localhost:8080/api/invoices').toPromise(),
-      this.http.get<any[]>('http://localhost:8080/api/services').toPromise()
+      this.http.get<any[]>('/api/customers').toPromise(),
+      this.http.get<any[]>('/api/cdr-logs').toPromise(),
+      this.http.get<any[]>('/api/invoices').toPromise(),
+      this.http.get<any[]>('/api/services').toPromise()
     ]).then(([customers, cdrs, invoices, services]) => {
       this.customers = customers || [];
       this.allCdrs = cdrs || [];
@@ -53,7 +53,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {}
   verifyCustomer(custId: number) {
-    this.http.put(`http://localhost:8080/api/customers/${custId}`, {
+    this.http.put(`/api/customers/${custId}`, {
       ...this.customers.find(c => c.custId === custId),
       verificationStatus: 'VERIFIED'
     }).subscribe({
@@ -66,7 +66,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
   }
   
   rejectCustomer(custId: number) {
-    this.http.put(`http://localhost:8080/api/customers/${custId}`, {
+    this.http.put(`/api/customers/${custId}`, {
       ...this.customers.find(c => c.custId === custId),
       verificationStatus: 'REJECTED'
     }).subscribe({

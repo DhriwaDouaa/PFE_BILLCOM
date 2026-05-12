@@ -39,7 +39,7 @@ export class UserManagementComponent implements OnInit {
 
   load() {
     this.loading = true;
-    this.http.get<any[]>('http://localhost:8080/api/users').subscribe({
+    this.http.get<any[]>('/api/users').subscribe({
       next: (data) => {
         this.users = data;
         this.filteredUsers = data;
@@ -91,8 +91,8 @@ export class UserManagementComponent implements OnInit {
     this.saving = true;
 
     const obs = this.editMode
-      ? this.http.put(`http://localhost:8080/api/users/${this.editId}`, this.form)
-      : this.http.post('http://localhost:8080/api/users', this.form);
+      ? this.http.put(`/api/users/${this.editId}`, this.form)
+      : this.http.post('/api/users', this.form);
 
     obs.subscribe({
       next: () => {
@@ -110,7 +110,7 @@ export class UserManagementComponent implements OnInit {
 
   delete(userId: number) {
     if (!confirm('Supprimer cet utilisateur ?')) return;
-    this.http.delete(`http://localhost:8080/api/users/${userId}`).subscribe({
+    this.http.delete(`/api/users/${userId}`).subscribe({
       next: () => { this.load(); this.alert('Supprimé !', 'success'); },
       error: () => this.alert('Erreur suppression', 'error')
     });

@@ -23,7 +23,7 @@ export class ServicesComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8080/api/services').subscribe({
+    this.http.get<any[]>('/api/services').subscribe({
       next: (data) => {
         this.services = data;
         this.filteredServices = data;

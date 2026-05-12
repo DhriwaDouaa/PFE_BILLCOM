@@ -28,14 +28,14 @@ export class AdminCustomersComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8080/api/customers').subscribe({
+    this.http.get<any[]>('/api/customers').subscribe({
       next: (data) => {
         this.customers = data;
         this.filteredCustomers = data;
         this.loading = false;
       }
     });
-    this.http.get<any[]>('http://localhost:8080/api/cdr-logs').subscribe({
+    this.http.get<any[]>('/api/cdr-logs').subscribe({
       next: (data) => { this.allCdrs = data; }
     });
   }

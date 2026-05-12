@@ -42,17 +42,17 @@ export class AdminHealthComponent implements OnInit {
 
   ngOnInit() {
     this.check();
-    this.http.get<any[]>('http://localhost:8080/api/customers').subscribe({
+    this.http.get<any[]>('/api/customers').subscribe({
       next: (data) => { this.customers = data; }
     });
-    this.http.get<any[]>('http://localhost:8080/api/cdr-logs').subscribe({
+    this.http.get<any[]>('/api/cdr-logs').subscribe({
       next: (data) => { this.allCdrs = data; }
     });
   }
 
   check() {
     this.loading = true;
-    this.http.get('http://localhost:8080/api/health').subscribe({
+    this.http.get('/api/health').subscribe({
       next: () => { this.status = 'UP'; this.loading = false; },
       error: () => { this.status = 'DOWN'; this.loading = false; }
     });

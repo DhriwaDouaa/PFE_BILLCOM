@@ -18,7 +18,7 @@ export class CdrComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.http.get<any[]>('http://localhost:8080/api/cdr-logs').subscribe({
+    this.http.get<any[]>('/api/cdr-logs').subscribe({
       next: (data) => {
         this.cdrs = data;
         this.totalAmount = data

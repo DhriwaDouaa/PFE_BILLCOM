@@ -38,15 +38,15 @@ export class CustomerDetailComponent implements OnInit {
   loadData() {
     this.loading = true;
 
-    this.http.get<any>(`http://localhost:8080/api/customers/${this.custId}`).subscribe({
+    this.http.get<any>(`/api/customers/${this.custId}`).subscribe({
       next: (data) => { this.customer = data; }
     });
 
-    this.http.get<any[]>(`http://localhost:8080/api/cdr-logs/customer/${this.custId}`).subscribe({
+    this.http.get<any[]>(`/api/cdr-logs/customer/${this.custId}`).subscribe({
       next: (data) => { this.cdrs = data; }
     });
 
-    this.http.get<any[]>(`http://localhost:8080/api/invoices/customer/${this.custId}`).subscribe({
+    this.http.get<any[]>(`/api/invoices/customer/${this.custId}`).subscribe({
       next: (data) => { this.invoices = data; this.loading = false; },
       error: () => { this.loading = false; }
     });
