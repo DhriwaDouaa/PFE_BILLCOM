@@ -3,6 +3,7 @@ package com.example.timesten.controller;
 import com.example.timesten.model.Payment;
 import com.example.timesten.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -24,7 +25,12 @@ public class PaymentController {
     @PostMapping
     public Payment create(@RequestBody Payment p) { return paymentService.save(p); }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Payment> update(@PathVariable Long id, @RequestBody Payment p) {
+        p.setPaymentId(id);
+        return ResponseEntity.ok(paymentService.save(p));
+    }
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) { paymentService.delete(id); }
 }
-

@@ -19,46 +19,24 @@ export class AdminSubscriptionsComponent implements OnInit {
   searchTerm = '';
   selectedPlan = '';
 
-  // Plans disponibles
   plans = [
-    {
-      name: 'BASIC',
-      label: 'Basic',
-      price: 50,
-      bonus: 5,
-      color: 'info',
-      icon: 'bi-star',
-      features: ['50 TND de crédit', '+5% de bonus', 'Services standards']
-    },
-    {
-      name: 'STANDARD',
-      label: 'Standard',
-      price: 100,
-      bonus: 10,
-      color: 'primary',
-      icon: 'bi-star-fill',
-      features: ['100 TND de crédit', '+10% de bonus', 'Tous les services'],
-      popular: true
-    },
-    {
-      name: 'PREMIUM',
-      label: 'Premium',
-      price: 200,
-      bonus: 20,
-      color: 'warning',
-      icon: 'bi-stars',
-      features: ['200 TND de crédit', '+20% de bonus', 'Services illimités']
-    }
+    { name: 'BASIC',    label: 'Basic',    price: 50,  bonus: 5,  color: 'info',    icon: 'bi-star',      features: ['50 TND de crédit', '+5% de bonus', 'Services standards'] },
+    { name: 'STANDARD', label: 'Standard', price: 100, bonus: 10, color: 'primary', icon: 'bi-star-fill', features: ['100 TND de crédit', '+10% de bonus', 'Tous les services'], popular: true },
+    { name: 'PREMIUM',  label: 'Premium',  price: 200, bonus: 20, color: 'warning', icon: 'bi-stars',     features: ['200 TND de crédit', '+20% de bonus', 'Services illimités'] }
   ];
 
-  // Modal créer souscription
+  // Modal créer
   showCreateModal = false;
   createLoading = false;
   createError = '';
-  newSubscription = {
-    custId: null as number | null,
-    planName: 'BASIC'
-  };
+  newSubscription = { custId: null as number | null, planName: 'BASIC' };
+
+  // Modal modifier
+  showEditModal = false;
+  editLoading = false;
+  editError = '';
+  editSubscription: any = {};
+  editPlanName = 'BASIC';
 
   // Modal supprimer
   showDeleteModal = false;
@@ -76,7 +54,6 @@ export class AdminSubscriptionsComponent implements OnInit {
 
   loadData() {
     this.loading = true;
-    // Charger tous les payments de type SOUSCRIPTION
     this.http.get<any[]>('/api/payments').subscribe({
       next: (data) => {
         this.subscriptions = data
@@ -87,7 +64,6 @@ export class AdminSubscriptionsComponent implements OnInit {
       },
       error: () => { this.loading = false; }
     });
-    // Charger clients pour le select
     this.http.get<any[]>('/api/customers').subscribe({
       next: (data) => { this.customers = data; }
     });
@@ -132,7 +108,6 @@ export class AdminSubscriptionsComponent implements OnInit {
     const bonus = plan.price * plan.bonus / 100;
     const totalCredit = plan.price + bonus;
 
-    // 1. Créer le payment
     const paymentPayload = {
       custId: this.newSubscription.custId,
       amount: plan.price,
@@ -143,7 +118,6 @@ export class AdminSubscriptionsComponent implements OnInit {
 
     this.http.post<any>('/api/payments', paymentPayload).subscribe({
       next: (created) => {
-        // 2. Mettre à jour la balance du client
         this.http.get<any>(`/api/customers/${this.newSubscription.custId}`).subscribe({
           next: (customer) => {
             const newBalance = (customer.balance || 0) + totalCredit;
@@ -151,7 +125,6 @@ export class AdminSubscriptionsComponent implements OnInit {
               { balance: newBalance }).subscribe();
           }
         });
-
         this.subscriptions.unshift(created);
         this.applyFilters();
         this.createLoading = false;
@@ -161,6 +134,47 @@ export class AdminSubscriptionsComponent implements OnInit {
       error: () => {
         this.createError = 'Erreur lors de la création.';
         this.createLoading = false;
+      }
+    });
+  }
+
+  // ─── EDIT ──────────────────────────────────────────────────
+
+  openEditModal(s: any) {
+    this.editSubscription = { ...s };
+    this.editPlanName = this.getPlanLabel(s.paymentMethod);
+    this.editError = '';
+    this.showEditModal = true;
+  }
+
+  closeEditModal() { this.showEditModal = false; }
+
+  submitEdit() {
+    this.editLoading = true;
+    this.editError = '';
+
+    const plan = this.plans.find(p => p.name === this.editPlanName)!;
+
+    const payload = {
+      ...this.editSubscription,
+      paymentMethod: 'SOUSCRIPTION_' + this.editPlanName,
+      amount: plan.price,
+      status: this.editSubscription.status,
+      paymentDate: this.editSubscription.paymentDate
+    };
+
+    this.http.put<any>(`/api/payments/${this.editSubscription.paymentId}`, payload).subscribe({
+      next: (updated) => {
+        const idx = this.subscriptions.findIndex(s => s.paymentId === updated.paymentId);
+        if (idx !== -1) this.subscriptions[idx] = updated;
+        this.applyFilters();
+        this.editLoading = false;
+        this.showEditModal = false;
+        this.toast('Souscription modifiée avec succès !', 'success');
+      },
+      error: () => {
+        this.editError = 'Erreur lors de la modification.';
+        this.editLoading = false;
       }
     });
   }
@@ -242,5 +256,13 @@ export class AdminSubscriptionsComponent implements OnInit {
 
   getTotalRevenue(): number {
     return this.subscriptions.reduce((sum, s) => sum + (s.amount || 0), 0);
+  }
+
+  getPlanPrice(planName: string): number {
+    return this.plans.find(p => p.name === planName)?.price || 0;
+  }
+
+  getPlanBonus(planName: string): number {
+    return this.plans.find(p => p.name === planName)?.bonus || 0;
   }
 }
