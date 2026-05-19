@@ -51,91 +51,88 @@ export class LoginComponent implements OnInit {
 
   selectedService: any = null;
 
+  services = [
+    {
+      icon: 'bi-wifi',
+      title: 'WiFi Voiture',
+      desc: 'Connexion haut débit dans votre véhicule',
+      color: 'text-info',
+      bg: 'bg-info',
+      details: 'Profitez d\'une connexion WiFi ultra-rapide dans votre véhicule connecté. Facturation automatique par MB consommé via notre moteur de rating BSS.',
+      features: ['Connexion 4G/5G', 'Facturation par MB', 'Gratuit jusqu\'à 500MB', 'Disponible 24h/24'],
+      price: '0.0100 DT/MB',
+      code: 'SRV-WIFI-001',
+      type: 'CONNECTIVITY',
+      billing: 'FREEMIUM'
+    },
+    {
+      icon: 'bi-thermometer-sun',
+      title: 'Climatiseur',
+      desc: 'Climatisation intelligente contrôlée',
+      color: 'text-warning',
+      bg: 'bg-warning',
+      details: 'Système de climatisation intelligent avec contrôle automatique de la température. Facturation à la minute selon votre utilisation réelle.',
+      features: ['Contrôle température', 'Économie d\'énergie', 'Facturation par minute', 'Mode eco disponible'],
+      price: '0.0500 DT/MIN',
+      code: 'SRV-CLIM-002',
+      type: 'COMFORT',
+      billing: 'SESSION'
+    },
+    {
+      icon: 'bi-cup-hot-fill',
+      title: 'Machine à Café',
+      desc: 'Café bio RFID à la demande',
+      color: 'text-danger',
+      bg: 'bg-danger',
+      details: 'Machine à café intégrée avec capsules bio détectées par RFID. Profitez d\'une remise automatique sur les capsules bio certifiées.',
+      features: ['Capsules bio RFID', 'Remise 15% bio', 'Facturation par dose', 'Plusieurs saveurs'],
+      price: '1.5000 DT/DOSE',
+      code: 'SRV-CAFE-004',
+      type: 'COMFORT',
+      billing: 'EVENT'
+    },
+    {
+      icon: 'bi-geo-alt-fill',
+      title: 'GPS Navigation',
+      desc: 'Navigation GPS incluse gratuitement',
+      color: 'text-success',
+      bg: 'bg-success',
+      details: 'Navigation GPS haute précision incluse dans tous vos trajets. Service totalement gratuit, enregistré automatiquement dans vos CDR.',
+      features: ['Navigation temps réel', 'Inclus gratuitement', 'Mise à jour auto', 'Points d\'intérêt'],
+      price: 'GRATUIT',
+      code: 'SRV-GPS-006',
+      type: 'NAVIGATION',
+      billing: 'INCLUDED'
+    },
+    {
+      icon: 'bi-person-workspace',
+      title: 'Siège Ergonomique',
+      desc: 'Confort optimal avec massage',
+      color: 'text-primary',
+      bg: 'bg-primary',
+      details: 'Siège ergonomique intelligent avec fonction massage et chauffage. Adaptez votre confort selon vos préférences pour chaque trajet.',
+      features: ['Massage intégré', 'Chauffage siège', 'Facturation par minute', 'Profil personnalisé'],
+      price: '0.0300 DT/MIN',
+      code: 'SRV-SIEG-003',
+      type: 'COMFORT',
+      billing: 'SESSION'
+    },
+    {
+      icon: 'bi-speaker-fill',
+      title: 'Radio & Musique',
+      desc: 'Streaming musical intégré',
+      color: 'text-info',
+      bg: 'bg-info',
+      details: 'Système audio premium avec streaming musical intégré. Profitez de vos playlists et stations radio préférées pendant vos trajets.',
+      features: ['Streaming musical', 'Radio intégrée', 'Bluetooth', 'Facturation par minute'],
+      price: '0.0200 DT/MIN',
+      code: 'SRV-RADI-007',
+      type: 'ENTERTAINMENT',
+      billing: 'SESSION'
+    }
+  ];
 
-  
-
-services = [
-  {
-    icon: 'bi-wifi',
-    title: 'WiFi Voiture',
-    desc: 'Connexion haut débit dans votre véhicule',
-    color: 'text-info',
-    bg: 'bg-info',
-    details: 'Profitez d\'une connexion WiFi ultra-rapide dans votre véhicule connecté. Facturation automatique par MB consommé via notre moteur de rating BSS.',
-    features: ['Connexion 4G/5G', 'Facturation par MB', 'Gratuit jusqu\'à 500MB', 'Disponible 24h/24'],
-    price: '0.0100 DT/MB',
-    code: 'SRV-WIFI-001',
-    type: 'CONNECTIVITY',
-    billing: 'FREEMIUM'
-  },
-  {
-    icon: 'bi-thermometer-sun',
-    title: 'Climatiseur',
-    desc: 'Climatisation intelligente contrôlée',
-    color: 'text-warning',
-    bg: 'bg-warning',
-    details: 'Système de climatisation intelligent avec contrôle automatique de la température. Facturation à la minute selon votre utilisation réelle.',
-    features: ['Contrôle température', 'Économie d\'énergie', 'Facturation par minute', 'Mode eco disponible'],
-    price: '0.0500 DT/MIN',
-    code: 'SRV-CLIM-002',
-    type: 'COMFORT',
-    billing: 'SESSION'
-  },
-  {
-    icon: 'bi-cup-hot-fill',
-    title: 'Machine à Café',
-    desc: 'Café bio RFID à la demande',
-    color: 'text-danger',
-    bg: 'bg-danger',
-    details: 'Machine à café intégrée avec capsules bio détectées par RFID. Profitez d\'une remise automatique sur les capsules bio certifiées.',
-    features: ['Capsules bio RFID', 'Remise 15% bio', 'Facturation par dose', 'Plusieurs saveurs'],
-    price: '1.5000 DT/DOSE',
-    code: 'SRV-CAFE-004',
-    type: 'COMFORT',
-    billing: 'EVENT'
-  },
-  {
-    icon: 'bi-geo-alt-fill',
-    title: 'GPS Navigation',
-    desc: 'Navigation GPS incluse gratuitement',
-    color: 'text-success',
-    bg: 'bg-success',
-    details: 'Navigation GPS haute précision incluse dans tous vos trajets. Service totalement gratuit, enregistré automatiquement dans vos CDR.',
-    features: ['Navigation temps réel', 'Inclus gratuitement', 'Mise à jour auto', 'Points d\'intérêt'],
-    price: 'GRATUIT',
-    code: 'SRV-GPS-006',
-    type: 'NAVIGATION',
-    billing: 'INCLUDED'
-  },
-  {
-    icon: 'bi-person-workspace',
-    title: 'Siège Ergonomique',
-    desc: 'Confort optimal avec massage',
-    color: 'text-primary',
-    bg: 'bg-primary',
-    details: 'Siège ergonomique intelligent avec fonction massage et chauffage. Adaptez votre confort selon vos préférences pour chaque trajet.',
-    features: ['Massage intégré', 'Chauffage siège', 'Facturation par minute', 'Profil personnalisé'],
-    price: '0.0300 DT/MIN',
-    code: 'SRV-SIEG-003',
-    type: 'COMFORT',
-    billing: 'SESSION'
-  },
-  {
-    icon: 'bi-speaker-fill',
-    title: 'Radio & Musique',
-    desc: 'Streaming musical intégré',
-    color: 'text-info',
-    bg: 'bg-info',
-    details: 'Système audio premium avec streaming musical intégré. Profitez de vos playlists et stations radio préférées pendant vos trajets.',
-    features: ['Streaming musical', 'Radio intégrée', 'Bluetooth', 'Facturation par minute'],
-    price: '0.0200 DT/MIN',
-    code: 'SRV-RADI-007',
-    type: 'ENTERTAINMENT',
-    billing: 'SESSION'
-  }
-];
-
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   ngOnInit() {
     this.generateParticles();
@@ -265,42 +262,62 @@ services = [
   }
 
   signup() {
-  if (!this.signupEmail || !this.signupPassword || !this.signupConfirmPassword) {
-    this.signupError = 'Veuillez remplir tous les champs';
-    return;
-  }
-  if (this.signupPassword !== this.signupConfirmPassword) {
-    this.signupError = 'Les mots de passe ne correspondent pas';
-    return;
-  }
-
-  this.signupLoading = true;
-  this.signupError = '';
-
-  const newUser = {
-    username: this.signupFirstName + ' ' + this.signupLastName,
-    email: this.signupEmail,
-    password: this.signupPassword,
-    role: 'MEMBER',
-    custId: null
-  };
-
-  this.http.post<any>('/api/users', newUser).subscribe({
-    next: () => {
-      this.signupLoading = false;
-      this.signupSuccess = true;
-      setTimeout(() => {
-        this.activeTab = 'login';
-        this.email = this.signupEmail;
-        this.signupStep = 1;
-      }, 2000);
-    },
-    error: () => {
-      this.signupLoading = false;
-      this.signupError = 'Erreur lors de la création du compte';
+    if (!this.signupEmail || !this.signupPassword || !this.signupConfirmPassword) {
+      this.signupError = 'Veuillez remplir tous les champs';
+      return;
     }
-  });
-}
+    if (this.signupPassword !== this.signupConfirmPassword) {
+      this.signupError = 'Les mots de passe ne correspondent pas';
+      return;
+    }
+
+    this.signupLoading = true;
+    this.signupError = '';
+
+    // STEP 1 : créer Customer d'abord
+    const customerPayload = {
+      name: this.signupFirstName + ' ' + this.signupLastName,
+      phone: '',
+      age: this.getAge(),
+      clientType: this.signupClientType || 'STANDARD',
+      balance: 0,
+      status: 'EN_ATTENTE',
+      verificationStatus: 'PENDING'
+    };
+
+    this.http.post<any>('/api/customers', customerPayload).subscribe({
+      next: (createdCustomer) => {
+        // STEP 2 : créer User lié au Customer
+        const newUser = {
+          username: this.signupFirstName + ' ' + this.signupLastName,
+          email: this.signupEmail,
+          password: this.signupPassword,
+          role: 'MEMBER',
+          custId: createdCustomer.custId
+        };
+
+        this.http.post<any>('/api/users', newUser).subscribe({
+          next: () => {
+            this.signupLoading = false;
+            this.signupSuccess = true;
+            setTimeout(() => {
+              this.activeTab = 'login';
+              this.email = this.signupEmail;
+              this.signupStep = 1;
+            }, 2000);
+          },
+          error: (err) => {
+            this.signupLoading = false;
+            this.signupError = err?.error || 'Erreur lors de la création du compte';
+          }
+        });
+      },
+      error: () => {
+        this.signupLoading = false;
+        this.signupError = 'Erreur lors de la création du profil';
+      }
+    });
+  }
 
   getAge(): number {
     if (!this.signupBirthDate) return 0;
@@ -344,7 +361,8 @@ services = [
     if (s <= 66) return 'Moyen';
     return 'Fort';
   }
-    openServiceModal(service: any) {
+
+  openServiceModal(service: any) {
     this.selectedService = service;
   }
 

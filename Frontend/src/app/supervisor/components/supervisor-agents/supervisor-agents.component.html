@@ -1,0 +1,87 @@
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Mes agents</div>
+      <div class="page-sub">{{ loading ? "..." : agents.length + " agent(s) dans votre équipe" }}</div>
+    </div>
+    <button class="btn-add" (click)="showAddForm = !showAddForm">
+      <i class="bi bi-person-plus-fill"></i>
+      {{ showAddForm ? 'Annuler' : 'Ajouter un agent' }}
+    </button>
+  </div>
+
+  <!-- Formulaire ajout -->
+  <div class="add-form card" *ngIf="showAddForm">
+    <div class="form-title">Nouvel agent</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input type="text" [(ngModel)]="newAgent.username" placeholder="Ex: Karim Trabelsi"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="newAgent.email" placeholder="agent@bss.com"/>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" [(ngModel)]="newAgent.password" placeholder="••••••••"/>
+      </div>
+      <div class="form-group">
+        <label>Spécialité</label>
+        <select [(ngModel)]="newAgent.speciality">
+          <option value="">Choisir...</option>
+          <option value="Transport">Transport</option>
+          <option value="Livraison">Livraison</option>
+          <option value="VIP">VIP</option>
+          <option value="Support">Support</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-error" *ngIf="addError">{{ addError }}</div>
+    <div class="form-success" *ngIf="addSuccess">Agent créé avec succès ✓</div>
+    <button class="btn-submit" (click)="addAgent()" [disabled]="addLoading">
+      {{ addLoading ? 'Création...' : 'Créer l\'agent' }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" *ngIf="loading">
+    <i class="bi bi-arrow-repeat"></i> Chargement...
+  </div>
+
+  <!-- Liste agents -->
+  <div class="agent-list" *ngIf="!loading">
+    <div class="agent-card card" *ngFor="let agent of agents">
+      <div class="agent-left">
+        <div class="agent-avatar" [class.inactive]="!agent.isActive">
+          {{ getInitials(agent.name) }}
+        </div>
+        <div class="agent-meta">
+          <div class="agent-name">{{ agent.name }}</div>
+          <div class="agent-email">{{ agent.email }}</div>
+          <div class="agent-tags">
+            <span class="tag-spec">{{ agent.speciality }}</span>
+            <span class="tag-clients">{{ agent.clientCount }} clients</span>
+            <span class="tag-date">Depuis {{ agent.hiredAt }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="agent-right">
+        <span class="status-badge" [class.active]="agent.isActive" [class.inactive]="!agent.isActive">
+          {{ agent.isActive ? 'Actif' : 'Inactif' }}
+        </span>
+        <button class="toggle-btn" (click)="toggleAgent(agent)">
+          {{ agent.isActive ? 'Désactiver' : 'Activer' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="agents.length === 0">
+      <i class="bi bi-people"></i>
+      <span>Aucun agent dans votre équipe</span>
+    </div>
+  </div>
+
+</div>

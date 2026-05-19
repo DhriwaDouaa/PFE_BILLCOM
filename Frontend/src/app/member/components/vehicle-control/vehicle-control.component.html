@@ -1,0 +1,327 @@
+<div class="vc-page">
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 1 — NOTIFICATION GPS
+  ════════════════════════════════════════════ -->
+  <div class="screen" *ngIf="currentScreen === 1">
+    <div class="card">
+      <div class="notif-top">
+        <div class="live-dot"></div>
+        <div>
+          <div class="notif-title">Votre véhicule est arrivé</div>
+          <div class="notif-sub">{{ vehicleId }} vient d'atteindre votre position GPS</div>
+        </div>
+      </div>
+
+      <!-- Mini map statique -->
+      <div class="map-static">
+        <svg viewBox="0 0 400 130" width="100%" height="130">
+          <rect width="400" height="130" fill="#E1F5EE" opacity=".35"/>
+          <line x1="0" y1="65" x2="400" y2="65" stroke="#9FE1CB" stroke-width="6" opacity=".5"/>
+          <line x1="200" y1="0" x2="200" y2="130" stroke="#9FE1CB" stroke-width="6" opacity=".5"/>
+          <circle cx="200" cy="65" r="22" fill="none" stroke="#1D9E75" stroke-width="1.5" stroke-dasharray="4,3" opacity=".6"/>
+          <circle cx="200" cy="65" r="8" fill="#1D9E75" opacity=".2"/>
+          <circle cx="200" cy="65" r="4" fill="#1D9E75"/>
+          <text x="210" y="60" font-size="9" fill="#0F6E56">Vous</text>
+          <circle cx="178" cy="50" r="13" fill="#0F6E56"/>
+          <text x="178" y="55" text-anchor="middle" font-size="11">🚗</text>
+          <text x="178" y="72" text-anchor="middle" font-size="8" fill="#085041">{{ plate }}</text>
+          <text x="178" y="83" text-anchor="middle" font-size="8" fill="#085041">0 m</text>
+        </svg>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-box"><div class="info-lbl">Véhicule</div><div class="info-val">{{ vehicleId }}</div></div>
+        <div class="info-box"><div class="info-lbl">Arrivée</div><div class="info-val">{{ arrivalTime }}</div></div>
+        <div class="info-box"><div class="info-lbl">Modèle</div><div class="info-val">{{ model }}</div></div>
+        <div class="info-box"><div class="info-lbl">Distance</div><div class="info-val">0 m</div></div>
+      </div>
+
+      <button class="btn-primary" (click)="goTo(2)">
+        <i class="ti ti-eye"></i> Voir et confirmer le véhicule
+      </button>
+      <button class="btn-ghost" (click)="stopMission()">
+        <i class="ti ti-x"></i> Signaler un problème
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 2 — CONFIRMATION
+  ════════════════════════════════════════════ -->
+  <div class="screen" *ngIf="currentScreen === 2">
+    <div class="card">
+      <div class="screen-title">
+        <i class="ti ti-camera"></i> Confirmez votre véhicule
+      </div>
+
+      <!-- Photo ESP32-CAM -->
+      <div class="photo-box">
+        <div class="photo-loading" *ngIf="!photoLoaded">
+          <i class="ti ti-camera"></i>
+          <span>Capture en cours...</span>
+        </div>
+        <ng-container *ngIf="photoLoaded">
+          <!-- En production: <img [src]="'/api/safety/frame/' + vehicleId" alt="Photo véhicule"/> -->
+          <svg viewBox="0 0 400 155" width="100%" height="155">
+            <rect width="400" height="155" fill="#0a1a0d"/>
+            <rect x="80" y="55" width="240" height="55" rx="7" fill="#1D9E75"/>
+            <rect x="120" y="28" width="160" height="42" rx="7" fill="#0F6E56"/>
+            <circle cx="130" cy="112" r="16" fill="#1a1a1a"/>
+            <circle cx="270" cy="112" r="16" fill="#1a1a1a"/>
+            <rect x="165" y="86" width="70" height="18" rx="3" fill="white"/>
+            <text x="200" y="100" text-anchor="middle" font-size="11" fill="#111" font-weight="500">{{ plate }}</text>
+            <text x="8" y="148" font-size="8" fill="#39ff7a" font-family="monospace">LIVE · ESP32-CAM · {{ vehicleId }}</text>
+          </svg>
+          <div class="serial-tag">S/N: {{ serialNumber }}</div>
+        </ng-container>
+      </div>
+
+      <!-- Infos à confirmer -->
+      <div class="confirm-rows">
+        <div class="conf-row">
+          <span class="conf-lbl">Plaque</span>
+          <span class="conf-val">{{ plate }}</span>
+        </div>
+        <div class="conf-row">
+          <span class="conf-lbl">Modèle</span>
+          <span class="conf-val">{{ model }}</span>
+        </div>
+        <div class="conf-row">
+          <span class="conf-lbl">Numéro de série</span>
+          <span class="serial-check">{{ serialNumber }} ✓</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" (click)="goTo(3)">
+        <i class="ti ti-door-enter"></i> Confirmer — Ouvrir la porte
+      </button>
+      <button class="btn-ghost" (click)="goTo(1)">
+        <i class="ti ti-arrow-left"></i> Retour
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SCREEN 3 — DASHBOARD COMPLET
+  ════════════════════════════════════════════ -->
+  <div class="screen" *ngIf="currentScreen === 3">
+
+    <!-- Header -->
+    <div class="dash-header card">
+      <div>
+        <div class="dash-veh">{{ plate }}</div>
+        <div class="dash-model">{{ model }} · {{ vehicleId }}</div>
+      </div>
+      <span class="status-pill">
+        <i class="ti ti-circle-filled"></i> En service
+      </span>
+    </div>
+
+    <!-- Télémétrie -->
+    <div class="section-lbl">État en temps réel</div>
+    <div class="tele-grid">
+      <div class="tele-box">
+        <div class="tele-val">{{ tele.speed }}</div>
+        <div class="tele-unit">km/h</div>
+        <div class="tele-lbl">Vitesse</div>
+      </div>
+      <div class="tele-box">
+        <div class="tele-val">{{ tele.distance | number:'1.2-2' }}</div>
+        <div class="tele-unit">km</div>
+        <div class="tele-lbl">Distance</div>
+      </div>
+      <div class="tele-box">
+        <div class="tele-val">{{ tele.cargoTemp }}°</div>
+        <div class="tele-unit">°C</div>
+        <div class="tele-lbl">Cargo</div>
+      </div>
+      <div class="tele-box">
+        <div class="tele-val">{{ tele.billing | number:'1.3-3' }}</div>
+        <div class="tele-unit">DT</div>
+        <div class="tele-lbl">Facturé</div>
+      </div>
+    </div>
+
+    <!-- Mini Map GPS Live -->
+    <div class="section-lbl">Position GPS</div>
+    <div id="miniMap" class="mini-map"></div>
+
+    <!-- Portes -->
+    <div class="section-lbl">Accès</div>
+
+    <!-- Bouton principal avant ouverture -->
+    <div class="door-open-wrap" *ngIf="!doorOpened">
+      <button class="door-open-btn" (click)="openMainDoor()" aria-label="Ouvrir la porte">
+        <i class="ti ti-lock-open"></i>
+      </button>
+      <span class="door-open-lbl">Appuyez pour ouvrir la porte</span>
+    </div>
+
+    <!-- Toutes les portes après ouverture -->
+    <div class="doors-row" *ngIf="allDoorsVisible">
+      <div class="door-c" [class.open]="doors['fl']" (click)="toggleDoor('fl')">
+        <i class="ti ti-door"></i><span>Avant G</span>
+      </div>
+      <div class="door-c" [class.open]="doors['fr']" (click)="toggleDoor('fr')">
+        <i class="ti ti-door"></i><span>Avant D</span>
+      </div>
+      <div class="door-c" [class.open]="doors['trunk']" (click)="toggleDoor('trunk')">
+        <i class="ti ti-package"></i><span>Coffre</span>
+      </div>
+    </div>
+
+    <!-- Direction + Signalisation -->
+    <div class="section-lbl">Conduite</div>
+    <div class="controls-wrap">
+
+      <!-- Direction pad -->
+      <div class="ctrl-card">
+        <div class="ctrl-card-title">Direction</div>
+        <div class="dir-pad">
+          <div class="dp empty"></div>
+          <div class="dp" [class.active]="currentDir==='fwd'" (click)="setDirection('fwd')" aria-label="Avancer">
+            <i class="ti ti-arrow-up"></i>
+          </div>
+          <div class="dp empty"></div>
+          <div class="dp" [class.active]="currentDir==='left'" (click)="setDirection('left')" aria-label="Gauche">
+            <i class="ti ti-arrow-left"></i>
+          </div>
+          <div class="dp" [class.active]="currentDir==='stop'" (click)="setDirection('stop')" aria-label="Stop">
+            <i class="ti ti-player-stop"></i>
+          </div>
+          <div class="dp" [class.active]="currentDir==='right'" (click)="setDirection('right')" aria-label="Droite">
+            <i class="ti ti-arrow-right"></i>
+          </div>
+          <div class="dp empty"></div>
+          <div class="dp" [class.active]="currentDir==='rev'" (click)="setDirection('rev')" aria-label="Reculer">
+            <i class="ti ti-arrow-down"></i>
+          </div>
+          <div class="dp empty"></div>
+        </div>
+        <div class="spd-row">
+          <div>
+            <div class="spd-num">{{ motorSpeed }}</div>
+            <div class="spd-unit">%</div>
+          </div>
+          <input type="range" min="0" max="100" [value]="motorSpeed" step="1"
+                 (input)="onSpeedChange(+$any($event.target).value)" aria-label="Vitesse"/>
+        </div>
+      </div>
+
+      <!-- Signalisation -->
+      <div class="ctrl-card">
+        <div class="ctrl-card-title">Signalisation</div>
+        <div class="sig-list">
+          <div class="sig-btn" [class.active]="signals['lights']" (click)="toggleSignal('lights')">
+            <i class="ti ti-bulb"></i> Phares
+          </div>
+          <div class="sig-btn" [class.active]="signals['left']" (click)="toggleSignal('left')">
+            <i class="ti ti-arrow-badge-left"></i> Clignotant G
+          </div>
+          <div class="sig-btn" [class.active]="signals['right']" (click)="toggleSignal('right')">
+            <i class="ti ti-arrow-badge-right"></i> Clignotant D
+          </div>
+          <div class="sig-btn" [class.warn-active]="warnActive" (click)="toggleWarn()">
+            <i class="ti ti-alert-triangle"></i> Warning (2 faces)
+          </div>
+          <div class="sig-btn" [class.active]="signals['horn']" (click)="toggleSignal('horn')">
+            <i class="ti ti-speakerphone"></i> Klaxon
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services -->
+    <div class="section-lbl">Services à la demande</div>
+    <div class="svc-grid">
+      <ng-container *ngFor="let svc of services">
+
+        <!-- TOGGLE (clim, audio) -->
+        <div class="svc-toggle" *ngIf="svc.type==='toggle'"
+             [class.on]="svc.on" (click)="toggleService(svc)">
+          <i class="ti" [ngClass]="svc.icon"></i>
+          <div class="svc-inf">
+            <div class="svc-nm">{{ svc.name }}</div>
+            <div class="svc-pr">{{ svc.price }}</div>
+          </div>
+          <div class="tog"><div class="tok"></div></div>
+        </div>
+
+        <!-- ONE-SHOT (café, eau) -->
+        <div class="svc-shot" *ngIf="svc.type==='shot'">
+          <i class="ti" [ngClass]="svc.icon"></i>
+          <div class="svc-inf">
+            <div class="svc-nm">{{ svc.name }}</div>
+            <div class="svc-pr">{{ svc.price }}</div>
+            <div class="svc-count" *ngIf="(svc.count ?? 0) > 0">
+              {{ svc.count ?? 0 }} {{ svc.key==='cafe' ? 'dose' : 'unité' }}{{ (svc.count ?? 0) > 1 ? 's' : '' }}
+            </div>
+          </div>
+          <button class="shot-btn"
+                  [class.loading]="svc.loading"
+                  [class.sent]="svc.sent"
+                  [disabled]="svc.loading"
+                  (click)="dispenseShot(svc)">
+            {{ getShotLabel(svc) }}
+          </button>
+        </div>
+
+      </ng-container>
+    </div>
+
+    <!-- Obstacles -->
+    <div class="section-lbl">Détection obstacles</div>
+    <div class="obs-grid">
+      <div class="obs-b">
+        <div class="obs-v" [ngClass]="getObsClass(tele.obstacles.front)">
+          {{ tele.obstacles.front > 0 ? tele.obstacles.front + ' cm' : '—' }}
+        </div>
+        <div class="obs-l">Avant</div>
+      </div>
+      <div class="obs-b">
+        <div class="obs-v" [ngClass]="getObsClass(tele.obstacles.rear)">
+          {{ tele.obstacles.rear > 0 ? tele.obstacles.rear + ' cm' : '—' }}
+        </div>
+        <div class="obs-l">Arrière</div>
+      </div>
+      <div class="obs-b">
+        <div class="obs-v" [ngClass]="getObsClass(tele.obstacles.left)">
+          {{ tele.obstacles.left > 0 ? tele.obstacles.left + ' cm' : '—' }}
+        </div>
+        <div class="obs-l">Gauche</div>
+      </div>
+      <div class="obs-b">
+        <div class="obs-v" [ngClass]="getObsClass(tele.obstacles.right)">
+          {{ tele.obstacles.right > 0 ? tele.obstacles.right + ' cm' : '—' }}
+        </div>
+        <div class="obs-l">Droite</div>
+      </div>
+    </div>
+
+    <!-- Historique commandes -->
+    <div class="section-lbl">Historique des commandes</div>
+    <div class="log-wrap">
+      <div class="log-empty" *ngIf="commandLog.length === 0">
+        Aucune commande envoyée
+      </div>
+      <div class="log-row" *ngFor="let cmd of commandLog">
+        <div class="log-left">
+          <span class="log-time">{{ cmd.time }}</span>
+          <span class="log-label">{{ cmd.label }}</span>
+        </div>
+        <div class="log-right">
+          <span class="log-topic">{{ cmd.topic }}</span>
+          <span class="log-status" [class.sent]="cmd.status==='sent'">
+            {{ cmd.status === 'sent' ? '✓' : '...' }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <button class="stop-btn" (click)="stopMission()">
+      <i class="ti ti-player-stop"></i> Terminer la mission
+    </button>
+
+  </div>
+</div>

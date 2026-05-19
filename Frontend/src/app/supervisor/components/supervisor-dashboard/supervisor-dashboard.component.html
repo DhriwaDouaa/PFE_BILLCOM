@@ -1,0 +1,101 @@
+<div class="sup-page">
+
+  <!-- HEADER -->
+  <div class="card header-card">
+    <div class="sup-header">
+      <div class="avatar-lg">{{ supervisorInitials }}</div>
+      <div class="sup-info">
+        <div class="sup-name">{{ supervisorName }}</div>
+        <div class="sup-role">Superviseur BSS</div>
+      </div>
+      <span class="dept-badge"><i class="bi bi-building"></i> {{ department }}</span>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val">{{ stats.totalAgents }}</div><div class="stat-lbl">Agents</div></div>
+      <div class="stat-box"><div class="stat-val">{{ stats.totalClients }}</div><div class="stat-lbl">Clients assignés</div></div>
+      <div class="stat-box success"><div class="stat-val">{{ stats.activeMissions }}</div><div class="stat-lbl">Missions actives</div></div>
+      <div class="stat-box info"><div class="stat-val">{{ unassignedClients.length }}</div><div class="stat-lbl">Non assignés</div></div>
+    </div>
+  </div>
+
+  <!-- MISSIONS EN COURS -->
+  <div class="section-lbl" *ngIf="activeMissions.length > 0">Missions en cours</div>
+  <div class="missions-list" *ngIf="activeMissions.length > 0">
+    <div class="mission-card" *ngFor="let m of activeMissions">
+      <div class="mission-live"></div>
+      <div class="mission-info">
+        <div class="mission-agent">{{ m.agentName }} — {{ m.clientName }}</div>
+        <div class="mission-detail">{{ m.plate }} · {{ m.distanceKm | number:'1.1-1' }} km · {{ m.durationMin }} min</div>
+      </div>
+      <div class="mission-amount">{{ m.amount | number:'1.3-3' }} DT</div>
+    </div>
+  </div>
+
+  <!-- AGENTS -->
+  <div class="section-lbl">Mes agents et leurs clients</div>
+  <div class="agent-list">
+    <div class="agent-card" *ngFor="let agent of agents" [class.expanded]="agent.expanded">
+
+      <!-- Agent row -->
+      <div class="agent-row" (click)="toggleAgent(agent)">
+        <div class="agent-avatar av-teal">{{ getInitials(agent.name) }}</div>
+        <div class="agent-meta">
+          <div class="agent-name">{{ agent.name }}</div>
+          <div class="agent-spec">{{ agent.speciality }} · Agent #{{ agent.agentId }}</div>
+        </div>
+        <div class="agent-counters">
+          <div class="counter-box"><div class="counter-val">{{ agent.clients?.length ?? 0 }}</div><div class="counter-lbl">clients</div></div>
+          <div class="counter-box"><div class="counter-val success-txt">{{ getMissionActive(agent) }}</div><div class="counter-lbl">actif</div></div>
+        </div>
+        <div class="status-dot" [ngClass]="agent.isActive ? 'dot-active' : 'dot-idle'"></div>
+        <button class="expand-btn" aria-label="Voir clients"><i class="bi bi-chevron-down"></i></button>
+      </div>
+
+      <!-- Client panel -->
+      <div class="client-panel" *ngIf="agent.expanded">
+
+        <!-- Clients assignés -->
+        <div class="panel-title">Clients assignés ({{ agent.clients?.length ?? 0 }})</div>
+        <div class="client-list" *ngIf="(agent.clients?.length ?? 0) > 0">
+          <div class="client-row" *ngFor="let c of agent.clients">
+            <div class="client-initials">{{ getInitials(c.name) }}</div>
+            <div class="client-meta">
+              <div class="client-name">
+                {{ c.name }}
+                <span class="type-badge" [class.vip]="c.clientType === 'VIP'">{{ getTypeLabel(c.clientType) }}</span>
+              </div>
+              <div class="client-phone"><i class="bi bi-phone"></i> {{ c.phone }}</div>
+            </div>
+            <div class="client-balance">{{ c.balance | number:'1.3-3' }} DT</div>
+            <span class="mission-pill" [ngClass]="getPillClass(c.missionStatus)">{{ getMissionLabel(c.missionStatus) }}</span>
+            <button class="unassign-btn" (click)="unassignClient(agent, c)" aria-label="Retirer">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+        <div class="no-clients" *ngIf="!agent.clients?.length">Aucun client assigné</div>
+
+        <!-- Assigner depuis liste -->
+        <div class="assign-section">
+          <div class="assign-title">Assigner un client</div>
+          <div class="assign-row">
+            <select [(ngModel)]="agent.selectedClientId" class="assign-select">
+              <option [ngValue]="null">Choisir un client non assigné...</option>
+              <option *ngFor="let c of unassignedClients" [ngValue]="c.custId">
+                #{{ c.custId }} — {{ c.name }} ({{ getTypeLabel(c.clientType) }}) · {{ c.phone }}
+              </option>
+            </select>
+            <button class="assign-btn" (click)="assignClient(agent)" [disabled]="!agent.selectedClientId">
+              <i class="bi bi-plus"></i> Assigner
+            </button>
+          </div>
+          <div class="unassigned-count" *ngIf="unassignedClients.length > 0">
+            <i class="bi bi-info-circle"></i> {{ unassignedClients.length }} client(s) disponibles à assigner
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -46,31 +46,45 @@ public class CustomerService {
 
     @Transactional
     public Customer create(Customer customer) {
-        if (customerRepository.existsById(customer.getCustId())) {
-            throw new IllegalArgumentException("Customer with id " + customer.getCustId() + " already exists");
+        // Auto-generate custId si non fourni
+        if (customer.getCustId() == null) {
+            Long maxId = customerRepository.findAll()
+                .stream()
+                .mapToLong(c -> c.getCustId() != null ? c.getCustId() : 0L)
+                .max()
+                .orElse(0L);
+            customer.setCustId(maxId + 1);
         }
-        log.info("Creating customer: {}", customer);
+        // Auto-generate codeClient si non fourni
+        if (customer.getCodeClient() == null || customer.getCodeClient().isBlank()) {
+            String year = String.valueOf(java.time.Year.now().getValue());
+            String padded = String.format("%03d", customer.getCustId());
+            customer.setCodeClient("CLT-" + year + "-" + padded);
+        }
+        if (customerRepository.existsById(customer.getCustId())) {
+            throw new IllegalArgumentException("Customer id " + customer.getCustId() + " already exists");
+        }
+        log.info("Creating customer id={} codeClient={}", customer.getCustId(), customer.getCodeClient());
         return customerRepository.save(customer);
     }
 
     @Transactional
-public Customer update(Long id, Customer updated) {
-    return customerRepository.findById(id).map(existing -> {
-        existing.setName(updated.getName());
-        existing.setBalance(updated.getBalance());
-        existing.setStatus(updated.getStatus());
-        existing.setPhone(updated.getPhone());
-        existing.setClientType(updated.getClientType());
-        existing.setVerificationStatus(updated.getVerificationStatus());
-        existing.setVerificationDoc(updated.getVerificationDoc());
-        if (updated.getProfilePicture() != null && !updated.getProfilePicture().isEmpty()) {
-            existing.setProfilePicture(updated.getProfilePicture());
-        }
-        log.info("Updating customer id={}", id);
-        return customerRepository.save(existing);
-    }).orElseThrow(() -> new RuntimeException("Customer not found: " + id));
-}
-
+    public Customer update(Long id, Customer updated) {
+        return customerRepository.findById(id).map(existing -> {
+            existing.setName(updated.getName());
+            existing.setBalance(updated.getBalance());
+            existing.setStatus(updated.getStatus());
+            existing.setPhone(updated.getPhone());
+            existing.setClientType(updated.getClientType());
+            existing.setVerificationStatus(updated.getVerificationStatus());
+            existing.setVerificationDoc(updated.getVerificationDoc());
+            if (updated.getProfilePicture() != null && !updated.getProfilePicture().isEmpty()) {
+                existing.setProfilePicture(updated.getProfilePicture());
+            }
+            log.info("Updating customer id={}", id);
+            return customerRepository.save(existing);
+        }).orElseThrow(() -> new RuntimeException("Customer not found: " + id));
+    }
 
     @Transactional
     public void updateBalance(Long id, BigDecimal newBalance) {

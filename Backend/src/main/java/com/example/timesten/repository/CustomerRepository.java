@@ -22,6 +22,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     // Clients avec solde supérieur à un montant
     List<Customer> findByBalanceGreaterThan(BigDecimal balance);
+    List<Customer> findByAgentId(Long agentId);
 
     // Requête JPQL personnalisée
     @Query("SELECT c FROM Customer c WHERE c.status = :status AND c.balance >= :minBalance")

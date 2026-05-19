@@ -1,5 +1,20 @@
 <div class="p-4">
 
+  <!-- Toast -->
+  <div *ngIf="showToast" class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999">
+    <div class="toast show align-items-center text-white border-0" [ngClass]="'bg-' + toastType">
+      <div class="d-flex">
+        <div class="toast-body fw-semibold">
+          <i class="bi me-2" [class.bi-check-circle-fill]="toastType==='success'"
+            [class.bi-exclamation-triangle-fill]="toastType==='warning'"
+            [class.bi-x-circle-fill]="toastType==='danger'"></i>
+          {{ toastMsg }}
+        </div>
+        <button class="btn-close btn-close-white me-2 m-auto" (click)="showToast=false"></button>
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center gap-3">
@@ -11,19 +26,21 @@
         <p class="text-muted mb-0">{{ filteredServices.length }} service(s) disponible(s)</p>
       </div>
     </div>
-    <!-- Toggle vue -->
-    <div class="btn-group">
-      <button class="btn btn-sm"
-              [class.btn-info]="viewMode === 'cards'"
-              [class.btn-outline-info]="viewMode !== 'cards'"
-              (click)="viewMode = 'cards'">
-        <i class="bi bi-grid-fill me-1"></i>Cards
-      </button>
-      <button class="btn btn-sm"
-              [class.btn-info]="viewMode === 'table'"
-              [class.btn-outline-info]="viewMode !== 'table'"
-              (click)="viewMode = 'table'">
-        <i class="bi bi-table me-1"></i>Tableau
+    <div class="d-flex gap-2">
+      <!-- Toggle vue -->
+      <div class="btn-group">
+        <button class="btn btn-sm" [class.btn-info]="viewMode === 'cards'"
+          [class.btn-outline-info]="viewMode !== 'cards'" (click)="viewMode = 'cards'">
+          <i class="bi bi-grid-fill me-1"></i>Cards
+        </button>
+        <button class="btn btn-sm" [class.btn-info]="viewMode === 'table'"
+          [class.btn-outline-info]="viewMode !== 'table'" (click)="viewMode = 'table'">
+          <i class="bi bi-table me-1"></i>Tableau
+        </button>
+      </div>
+      <!-- Nouveau service -->
+      <button class="btn btn-info text-white fw-semibold" (click)="openCreateModal()">
+        <i class="bi bi-plus-lg me-1"></i>Nouveau Service
       </button>
     </div>
   </div>
@@ -69,20 +86,12 @@
     <div class="card-body">
       <div class="row g-3 align-items-end">
         <div class="col-md-4">
-          <label class="form-label fw-semibold">
-            <i class="bi bi-search me-1"></i>Rechercher
-          </label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="search()"
-            placeholder="Nom, code (SRV-WIFI-001) ou description...">
+          <label class="form-label fw-semibold"><i class="bi bi-search me-1"></i>Rechercher</label>
+          <input type="text" class="form-control" [(ngModel)]="searchTerm" (ngModelChange)="search()"
+            placeholder="Nom, code ou description...">
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-semibold">
-            <i class="bi bi-tag me-1"></i>Type
-          </label>
+          <label class="form-label fw-semibold"><i class="bi bi-tag me-1"></i>Type</label>
           <select class="form-select" [(ngModel)]="selectedType" (ngModelChange)="search()">
             <option value="">Tous les types</option>
             <option value="CONNECTIVITY">Connectivity</option>
@@ -92,9 +101,7 @@
           </select>
         </div>
         <div class="col-md-3">
-          <label class="form-label fw-semibold">
-            <i class="bi bi-credit-card me-1"></i>Facturation
-          </label>
+          <label class="form-label fw-semibold"><i class="bi bi-credit-card me-1"></i>Facturation</label>
           <select class="form-select" [(ngModel)]="selectedBilling" (ngModelChange)="search()">
             <option value="">Tous les modèles</option>
             <option value="FREEMIUM">Freemium</option>
@@ -118,18 +125,17 @@
     <p class="text-muted mt-2">Chargement services...</p>
   </div>
 
-  <!-- Erreur -->
   <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
   <!-- Vue Cards -->
   <div *ngIf="!loading && !error && viewMode === 'cards'" class="row g-4">
     <div *ngFor="let s of filteredServices" class="col-md-4">
-      <div class="card border-0 shadow-sm h-100 service-card">
+      <div class="card border-0 shadow-sm h-100 service-card" [class.opacity-50]="s.status !== 'ACTIVE'">
         <div class="card-header border-0 pb-0 pt-3 px-3">
           <div class="d-flex justify-content-between align-items-start">
             <div class="d-flex align-items-center gap-2">
               <div class="rounded-3 p-2" [ngClass]="getTypeBgColor(s.serviceType) + ' bg-opacity-10'">
-                <i class="bi fs-4"[ngClass]="[getServiceIcon(s), getServiceColor(s.serviceType)]"></i>
+                <i class="bi fs-4" [ngClass]="[getServiceIcon(s), getServiceColor(s.serviceType)]"></i>
               </div>
               <div>
                 <h6 class="fw-bold mb-0">{{ s.serviceName }}</h6>
@@ -143,8 +149,7 @@
         </div>
         <div class="card-body px-3">
           <p class="text-muted small mb-3">
-            <i class="bi bi-info-circle me-1"></i>
-            {{ s.description }}
+            <i class="bi bi-info-circle me-1"></i>{{ s.description }}
           </p>
           <div class="border-top pt-3">
             <div class="d-flex justify-content-between align-items-center">
@@ -156,25 +161,37 @@
                   {{ s.unitPrice | number:'1.4-4' }} DT
                   <small class="text-muted fw-normal">/{{ s.unit }}</small>
                 </span>
-                <span *ngIf="s.billingModel === 'INCLUDED'" class="badge bg-success">
-                  ✅ Gratuit
-                </span>
+                <span *ngIf="s.billingModel === 'INCLUDED'" class="badge bg-success">Gratuit</span>
               </div>
             </div>
           </div>
         </div>
-        <div class="card-footer border-0 bg-transparent px-3 pb-3">
-          <span class="badge"
-            [class.bg-success]="s.status === 'ACTIVE'"
-            [class.bg-danger]="s.status !== 'ACTIVE'">
+        <div class="card-footer border-0 bg-transparent px-3 pb-3 d-flex justify-content-between align-items-center">
+          <span class="badge" [class.bg-success]="s.status === 'ACTIVE'" [class.bg-danger]="s.status !== 'ACTIVE'">
             {{ s.status }}
           </span>
+          <div class="d-flex gap-1">
+            <!-- Toggle activer/désactiver -->
+            <button class="btn btn-sm" [class.btn-outline-success]="s.status !== 'ACTIVE'"
+              [class.btn-outline-warning]="s.status === 'ACTIVE'" (click)="toggleStatus(s)"
+              [title]="s.status === 'ACTIVE' ? 'Désactiver' : 'Activer'">
+              <i class="bi" [class.bi-toggle-on]="s.status === 'ACTIVE'"
+                [class.bi-toggle-off]="s.status !== 'ACTIVE'"></i>
+            </button>
+            <!-- Modifier -->
+            <button class="btn btn-sm btn-outline-secondary" (click)="openEditModal(s)" title="Modifier">
+              <i class="bi bi-pencil-fill"></i>
+            </button>
+            <!-- Supprimer -->
+            <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(s)" title="Supprimer">
+              <i class="bi bi-trash-fill"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
     <div *ngIf="filteredServices.length === 0" class="col-12 text-center py-5 text-muted">
-      <i class="bi bi-search fs-1 d-block mb-2"></i>
-      Aucun service trouvé
+      <i class="bi bi-search fs-1 d-block mb-2"></i>Aucun service trouvé
     </div>
   </div>
 
@@ -186,29 +203,25 @@
           <tr>
             <th>Code</th>
             <th>Nom Service</th>
-            <th>Description</th>
             <th>Type</th>
             <th>Facturation</th>
-            <th>Prix Unitaire (DT)</th>
+            <th>Prix (DT)</th>
             <th>Unité</th>
             <th>Statut</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let s of filteredServices">
+          <tr *ngFor="let s of filteredServices" [class.table-secondary]="s.status !== 'ACTIVE'">
             <td><span class="badge bg-secondary">{{ s.codeService }}</span></td>
             <td>
               <div class="d-flex align-items-center gap-2">
-                <i class="bi fs-5"
-   [ngClass]="[getServiceIcon(s), getTypeColor(s.serviceType)]"></i>
+                <i class="bi fs-5" [ngClass]="[getServiceIcon(s), getTypeColor(s.serviceType)]"></i>
                 <strong>{{ s.serviceName }}</strong>
               </div>
             </td>
-            <td><small class="text-muted">{{ s.description }}</small></td>
             <td>
-              <span class="badge" [ngClass]="getTypeBgColor(s.serviceType)">
-                {{ s.serviceType }}
-              </span>
+              <span class="badge" [ngClass]="getTypeBgColor(s.serviceType)">{{ s.serviceType }}</span>
             </td>
             <td>
               <span class="badge" [ngClass]="getBillingBadge(s.billingModel)">
@@ -223,21 +236,185 @@
             </td>
             <td>{{ s.unit }}</td>
             <td>
-              <span class="badge"
-                [class.bg-success]="s.status === 'ACTIVE'"
-                [class.bg-danger]="s.status !== 'ACTIVE'">
+              <span class="badge" [class.bg-success]="s.status === 'ACTIVE'" [class.bg-danger]="s.status !== 'ACTIVE'">
                 {{ s.status }}
               </span>
             </td>
+            <td>
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm" [class.btn-outline-success]="s.status !== 'ACTIVE'"
+                  [class.btn-outline-warning]="s.status === 'ACTIVE'" (click)="toggleStatus(s)"
+                  [title]="s.status === 'ACTIVE' ? 'Désactiver' : 'Activer'">
+                  <i class="bi" [class.bi-toggle-on]="s.status === 'ACTIVE'"
+                    [class.bi-toggle-off]="s.status !== 'ACTIVE'"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="openEditModal(s)" title="Modifier">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(s)" title="Supprimer">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
+            </td>
           </tr>
           <tr *ngIf="filteredServices.length === 0">
-            <td colspan="8" class="text-center text-muted py-4">
-              Aucun service trouvé
-            </td>
+            <td colspan="8" class="text-center text-muted py-4">Aucun service trouvé</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+</div>
 
+<!-- ═══ MODAL CRÉER ═══ -->
+<div *ngIf="showCreateModal" class="modal-backdrop-custom" (click)="closeCreateModal()"></div>
+<div *ngIf="showCreateModal" class="modal-custom shadow-lg">
+  <div class="modal-header-custom">
+    <h5 class="mb-0 fw-bold"><i class="bi bi-plus-lg me-2 text-info"></i>Nouveau Service</h5>
+    <button class="btn-close" (click)="closeCreateModal()"></button>
+  </div>
+  <div class="modal-body-custom">
+    <div *ngIf="createError" class="alert alert-danger py-2">{{ createError }}</div>
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="form-label fw-semibold">Nom du service *</label>
+        <input type="text" class="form-control" [(ngModel)]="newService.serviceName" placeholder="Ex: WiFi Voiture">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Code Service</label>
+        <input type="text" class="form-control" [(ngModel)]="newService.codeService" placeholder="Ex: SRV-WIFI-001">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Type</label>
+        <select class="form-select" [(ngModel)]="newService.serviceType">
+          <option value="CONNECTIVITY">Connectivity</option>
+          <option value="COMFORT">Comfort</option>
+          <option value="NAVIGATION">Navigation</option>
+          <option value="ENTERTAINMENT">Entertainment</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Modèle Facturation</label>
+        <select class="form-select" [(ngModel)]="newService.billingModel">
+          <option value="SESSION">Par session (DT/MIN)</option>
+          <option value="FREEMIUM">Freemium (DT/MB)</option>
+          <option value="EVENT">Par événement (DT/unité)</option>
+          <option value="INCLUDED">Inclus gratuit</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Prix unitaire (DT)</label>
+        <input type="number" class="form-control" [(ngModel)]="newService.unitPrice" min="0" step="0.0001">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Unité</label>
+        <select class="form-select" [(ngModel)]="newService.unit">
+          <option value="MIN">MIN</option>
+          <option value="MB">MB</option>
+          <option value="KM">KM</option>
+          <option value="DOSE">DOSE</option>
+          <option value="UNIT">UNIT</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Description</label>
+        <input type="text" class="form-control" [(ngModel)]="newService.description"
+          placeholder="Description du service...">
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer-custom">
+    <button class="btn btn-secondary" (click)="closeCreateModal()">Annuler</button>
+    <button class="btn btn-info text-white fw-semibold" (click)="submitCreate()" [disabled]="createLoading">
+      <span *ngIf="createLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!createLoading" class="bi bi-check-lg me-1"></i>Créer
+    </button>
+  </div>
+</div>
+
+<!-- ═══ MODAL MODIFIER ═══ -->
+<div *ngIf="showEditModal" class="modal-backdrop-custom" (click)="closeEditModal()"></div>
+<div *ngIf="showEditModal" class="modal-custom shadow-lg">
+  <div class="modal-header-custom">
+    <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-fill me-2"></i>Modifier Service</h5>
+    <button class="btn-close" (click)="closeEditModal()"></button>
+  </div>
+  <div class="modal-body-custom">
+    <div *ngIf="editError" class="alert alert-danger py-2">{{ editError }}</div>
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="form-label fw-semibold">Nom du service *</label>
+        <input type="text" class="form-control" [(ngModel)]="editService.serviceName">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Code Service</label>
+        <input type="text" class="form-control" [(ngModel)]="editService.codeService">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Type</label>
+        <select class="form-select" [(ngModel)]="editService.serviceType">
+          <option value="CONNECTIVITY">Connectivity</option>
+          <option value="COMFORT">Comfort</option>
+          <option value="NAVIGATION">Navigation</option>
+          <option value="ENTERTAINMENT">Entertainment</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Modèle Facturation</label>
+        <select class="form-select" [(ngModel)]="editService.billingModel">
+          <option value="SESSION">Par session (DT/MIN)</option>
+          <option value="FREEMIUM">Freemium (DT/MB)</option>
+          <option value="EVENT">Par événement (DT/unité)</option>
+          <option value="INCLUDED">Inclus gratuit</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Prix unitaire (DT)</label>
+        <input type="number" class="form-control" [(ngModel)]="editService.unitPrice" min="0" step="0.0001">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Unité</label>
+        <select class="form-select" [(ngModel)]="editService.unit">
+          <option value="MIN">MIN</option>
+          <option value="MB">MB</option>
+          <option value="KM">KM</option>
+          <option value="DOSE">DOSE</option>
+          <option value="UNIT">UNIT</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label fw-semibold">Description</label>
+        <input type="text" class="form-control" [(ngModel)]="editService.description">
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer-custom">
+    <button class="btn btn-secondary" (click)="closeEditModal()">Annuler</button>
+    <button class="btn btn-primary fw-semibold" (click)="submitEdit()" [disabled]="editLoading">
+      <span *ngIf="editLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!editLoading" class="bi bi-save me-1"></i>Enregistrer
+    </button>
+  </div>
+</div>
+
+<!-- ═══ MODAL SUPPRIMER ═══ -->
+<div *ngIf="showDeleteModal" class="modal-backdrop-custom" (click)="closeDeleteModal()"></div>
+<div *ngIf="showDeleteModal" class="modal-custom shadow-lg" style="max-width:420px">
+  <div class="modal-header-custom bg-danger text-white">
+    <h5 class="mb-0 fw-bold"><i class="bi bi-trash-fill me-2"></i>Confirmer la suppression</h5>
+    <button class="btn-close btn-close-white" (click)="closeDeleteModal()"></button>
+  </div>
+  <div class="modal-body-custom text-center py-4">
+    <i class="bi bi-exclamation-triangle-fill text-danger fs-1 d-block mb-3"></i>
+    <p class="mb-1">Vous allez supprimer définitivement :</p>
+    <p class="fw-bold fs-5 text-danger">{{ deleteTarget?.serviceName }}</p>
+    <p class="text-muted small">Cette action est irréversible.</p>
+  </div>
+  <div class="modal-footer-custom">
+    <button class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
+    <button class="btn btn-danger fw-semibold" (click)="confirmDelete()" [disabled]="deleteLoading">
+      <span *ngIf="deleteLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!deleteLoading" class="bi bi-trash-fill me-1"></i>Supprimer
+    </button>
+  </div>
 </div>

@@ -1,66 +1,67 @@
 <div class="p-4">
 
-  <!-- Header -->
-  <div class="d-flex align-items-center gap-3 mb-4">
-    <div class="bg-info bg-opacity-10 p-3 rounded-3">
-      <i class="bi bi-people-fill text-info fs-2"></i>
-    </div>
-    <div>
-      <h3 class="fw-bold mb-0">Gestion Customers</h3>
-      <p class="text-muted mb-0">{{ filteredCustomers.length }} client(s) trouvé(s)</p>
+  <!-- Toast -->
+  <div *ngIf="showToast" class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999">
+    <div class="toast show align-items-center text-white border-0" [ngClass]="'bg-' + toastType">
+      <div class="d-flex">
+        <div class="toast-body fw-semibold">
+          <i class="bi me-2" [class.bi-check-circle-fill]="toastType==='success'"
+            [class.bi-exclamation-triangle-fill]="toastType==='warning'"
+            [class.bi-x-circle-fill]="toastType==='danger'"></i>
+          {{ toastMsg }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" (click)="showToast=false"></button>
+      </div>
     </div>
   </div>
 
-  <!-- Règles BSS -->
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="bg-info bg-opacity-10 p-3 rounded-3">
+        <i class="bi bi-people-fill text-info fs-2"></i>
+      </div>
+      <div>
+        <h3 class="fw-bold mb-0">Gestion Clients</h3>
+        <p class="text-muted mb-0">{{ filteredCustomers.length }} client(s) trouvé(s)</p>
+      </div>
+    </div>
+    <button class="btn btn-info text-white fw-semibold" (click)="openCreateModal()">
+      <i class="bi bi-person-plus-fill me-2"></i>Nouveau Client
+    </button>
+  </div>
+
+  <!-- Stats statuts -->
   <div class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm border-start border-warning border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">En Attente</p>
+          <h4 class="fw-bold mb-0 text-warning">{{ countByStatus('EN_ATTENTE') }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm border-start border-info border-4">
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Validés</p>
+          <h4 class="fw-bold mb-0 text-info">{{ countByStatus('VALIDE') }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
       <div class="card border-0 shadow-sm border-start border-success border-4">
-        <div class="card-body py-3">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <i class="bi bi-trophy-fill text-success fs-4"></i>
-            <div>
-              <small class="text-muted">SPORTIF</small>
-              <p class="mb-0 fw-bold text-success">-10% remise</p>
-            </div>
-          </div>
-          <p class="text-muted small mb-0">
-            <i class="bi bi-star-fill text-warning me-1"></i>
-            En tant que sportif, bénéficiez de <strong>10% de réduction</strong> sur tous vos services !
-          </p>
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Actifs</p>
+          <h4 class="fw-bold mb-0 text-success">{{ countByStatus('ACTIVE') + countByStatus('ACTIF') }}</h4>
         </div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm border-start border-primary border-4">
-        <div class="card-body py-3">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <i class="bi bi-mortarboard-fill text-primary fs-4"></i>
-            <div>
-              <small class="text-muted">ETUDIANT</small>
-              <p class="mb-0 fw-bold text-primary">-15% remise</p>
-            </div>
-          </div>
-          <p class="text-muted small mb-0">
-            <i class="bi bi-star-fill text-warning me-1"></i>
-            Offre spéciale étudiants ! <strong>15% de réduction</strong> sur tous les services !
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
+    <div class="col-6 col-md-3">
       <div class="card border-0 shadow-sm border-start border-danger border-4">
-        <div class="card-body py-3">
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <i class="bi bi-shield-fill-exclamation text-danger fs-4"></i>
-            <div>
-              <small class="text-muted">MINEUR</small>
-              <p class="mb-0 fw-bold text-danger">WiFi bloqué 🚫</p>
-            </div>
-          </div>
-          <p class="text-muted small mb-0">
-            <i class="bi bi-lock-fill text-danger me-1"></i>
-            Pour votre sécurité, l'accès WiFi est restreint. Autres services disponibles !
-          </p>
+        <div class="card-body py-2">
+          <p class="text-muted small mb-0">Rejetés</p>
+          <h4 class="fw-bold mb-0 text-danger">{{ countByStatus('REJETE') }}</h4>
         </div>
       </div>
     </div>
@@ -70,38 +71,42 @@
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-3 align-items-end">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label fw-semibold">
-            <i class="bi bi-search me-1"></i>Nom, Code Client ou Téléphone
+            <i class="bi bi-search me-1"></i>Nom / Code / Téléphone
           </label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="search()"
-            placeholder="Ex: Ahmed, CLT-2026-001 ou +216...">
+          <input type="text" class="form-control" [(ngModel)]="searchTerm" (ngModelChange)="search()"
+            placeholder="Ex: Ahmed, CLT-2026-001...">
         </div>
         <div class="col-md-3">
           <label class="form-label fw-semibold">
             <i class="bi bi-gear me-1"></i>Service utilisé
           </label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="selectedService"
-            (ngModelChange)="search()"
+          <input type="text" class="form-control" [(ngModel)]="selectedService" (ngModelChange)="search()"
             placeholder="Ex: WiFi, GPS, Cafe...">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <label class="form-label fw-semibold">
-            <i class="bi bi-person-badge me-1"></i>Type client
+            <i class="bi bi-person-badge me-1"></i>Type
           </label>
           <select class="form-select" [(ngModel)]="selectedType" (ngModelChange)="search()">
-            <option value="">Tous les types</option>
+            <option value="">Tous</option>
             <option value="STANDARD">Standard</option>
             <option value="SPORTIF">Sportif</option>
             <option value="ETUDIANT">Etudiant</option>
             <option value="MINEUR">Mineur</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold">
+            <i class="bi bi-circle-half me-1"></i>Statut
+          </label>
+          <select class="form-select" [(ngModel)]="selectedStatus" (ngModelChange)="search()">
+            <option value="">Tous</option>
+            <option value="EN_ATTENTE">En Attente</option>
+            <option value="VALIDE">Validé</option>
+            <option value="ACTIVE">Actif</option>
+            <option value="REJETE">Rejeté</option>
           </select>
         </div>
         <div class="col-md-2">
@@ -129,31 +134,27 @@
             <th>Nom</th>
             <th>Téléphone</th>
             <th>Age</th>
-            <th>Type Client</th>
+            <th>Type</th>
             <th>Statut</th>
             <th>Balance (DT)</th>
-            <th>Services Utilisés</th>
-            <th>Total Brut (DT)</th>
-            <th>Remise</th>
             <th>Total Net (DT)</th>
-            <th>Restrictions</th>
-            <th>Détail</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let c of filteredCustomers">
-            <td><span class="badge bg-secondary">{{ c.codeClient }}</span></td>
+            <td><span class="badge bg-secondary">{{ c.codeClient || '-' }}</span></td>
             <td>
               <div class="d-flex align-items-center gap-2">
                 <div class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-10"
-                     style="width:35px;height:35px;">
+                  style="width:35px;height:35px;">
                   <i class="bi text-info" [class]="getTypeIcon(c.clientType)"></i>
                 </div>
                 <strong>{{ c.name }}</strong>
               </div>
             </td>
-            <td><small><i class="bi bi-phone me-1"></i>{{ c.phone || '-' }}</small></td>
-            <td>{{ c.age || '-' }} ans</td>
+            <td><small>{{ c.phone || '-' }}</small></td>
+            <td>{{ c.age || '-' }}</td>
             <td>
               <span class="badge" [class]="getTypeBadgeClass(c.clientType)">
                 <i class="bi me-1" [class]="getTypeIcon(c.clientType)"></i>
@@ -161,54 +162,203 @@
               </span>
             </td>
             <td>
-              <span class="badge"
-                [class.bg-success]="c.status === 'ACTIVE'"
-                [class.bg-danger]="c.status !== 'ACTIVE'">
-                {{ c.status }}
+              <span class="badge" [class]="getStatusBadge(c.status)">
+                {{ getStatusLabel(c.status) }}
               </span>
             </td>
-            <td>{{ c.balance | number:'1.2-2' }}</td>
-            <td>
-              <span *ngFor="let sid of getUsedServices(c.custId)"
-                    class="badge bg-secondary me-1">
-                {{ getServiceName(sid) }}
-              </span>
-              <span *ngIf="getUsedServices(c.custId).length === 0" class="text-muted">-</span>
-            </td>
-            <td>{{ getCdrTotal(c.custId) | number:'1.2-2' }}</td>
-            <td>
-              <span *ngIf="getDiscount(c.clientType) > 0" class="badge bg-warning text-dark">
-                -{{ getDiscount(c.clientType) }}%
-              </span>
-              <span *ngIf="getDiscount(c.clientType) === 0" class="text-muted">-</span>
-            </td>
+            <td class="fw-semibold">{{ c.balance | number:'1.3-3' }}</td>
             <td>
               <strong class="text-primary">
                 {{ getAmountAfterDiscount(c.custId, c.clientType) | number:'1.2-2' }}
               </strong>
-            </td>
-            <td>
-              <span *ngIf="isWifiBlocked(c.clientType)" class="badge bg-danger">
-                🚫 WiFi bloqué
+              <span *ngIf="getDiscount(c.clientType) > 0" class="badge bg-warning text-dark ms-1">
+                -{{ getDiscount(c.clientType) }}%
               </span>
-              <span *ngIf="!isWifiBlocked(c.clientType)" class="text-muted">-</span>
             </td>
             <td>
-              <button class="btn btn-sm btn-outline-info" (click)="viewDetail(c.custId)"
-                      title="Voir fiche détaillée">
-                <i class="bi bi-eye-fill"></i>
-              </button>
+              <div class="d-flex gap-1 flex-wrap">
+                <!-- Détail -->
+                <button class="btn btn-sm btn-outline-info" (click)="viewDetail(c.custId)" title="Voir détail">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+                <!-- Modifier -->
+                <button class="btn btn-sm btn-outline-secondary" (click)="openEditModal(c)" title="Modifier">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <!-- Valider CIN -->
+                <button *ngIf="c.status === 'EN_ATTENTE' || c.verificationStatus === 'PENDING'"
+                  class="btn btn-sm btn-outline-success" (click)="validateCustomer(c)" title="Valider compte">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+                <!-- Rejeter CIN -->
+                <button *ngIf="c.status === 'EN_ATTENTE' || c.verificationStatus === 'PENDING'"
+                  class="btn btn-sm btn-outline-warning" (click)="rejectCustomer(c)" title="Rejeter compte">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+                <!-- Supprimer -->
+                <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(c)" title="Supprimer">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr *ngIf="filteredCustomers.length === 0">
-            <td colspan="13" class="text-center py-5 text-muted">
+            <td colspan="9" class="text-center py-5 text-muted">
               <i class="bi bi-search fs-1 d-block mb-2"></i>
-              Aucun customer trouvé
+              Aucun client trouvé
             </td>
           </tr>
         </tbody>
+        <tfoot *ngIf="filteredCustomers.length > 0" class="table-light fw-bold">
+          <tr>
+            <td colspan="6" class="text-end">Totaux :</td>
+            <td>{{ getTotalBalance() | number:'1.3-3' }} DT</td>
+            <td>{{ getTotalNet() | number:'1.2-2' }} DT</td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
 
+</div>
+
+<!-- ═══════════════════════════ MODAL CRÉER ═══════════════════════════ -->
+<div *ngIf="showCreateModal" class="modal-backdrop-custom" (click)="closeCreateModal()"></div>
+<div *ngIf="showCreateModal" class="modal-custom shadow-lg">
+  <div class="modal-header-custom">
+    <h5 class="mb-0 fw-bold">
+      <i class="bi bi-person-plus-fill me-2 text-info"></i>Nouveau Client
+    </h5>
+    <button class="btn-close" (click)="closeCreateModal()"></button>
+  </div>
+  <div class="modal-body-custom">
+    <div *ngIf="createError" class="alert alert-danger py-2">{{ createError }}</div>
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="form-label fw-semibold">Nom complet *</label>
+        <input type="text" class="form-control" [(ngModel)]="newCustomer.name" placeholder="Ex: Ahmed Ben Ali">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Email *</label>
+        <input type="email" class="form-control" [(ngModel)]="newCustomer.email" placeholder="client@email.com">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Mot de passe *</label>
+        <input type="password" class="form-control" [(ngModel)]="newCustomer.password" placeholder="Min. 6 caractères">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Téléphone</label>
+        <input type="text" class="form-control" [(ngModel)]="newCustomer.phone" placeholder="+216 XX XXX XXX">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Age</label>
+        <input type="number" class="form-control" [(ngModel)]="newCustomer.age" min="1" max="120">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Type Client</label>
+        <select class="form-select" [(ngModel)]="newCustomer.clientType">
+          <option value="STANDARD">Standard</option>
+          <option value="SPORTIF">Sportif (-10%)</option>
+          <option value="ETUDIANT">Etudiant (-15%)</option>
+          <option value="MINEUR">Mineur (WiFi bloqué)</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Balance initiale (DT)</label>
+        <input type="number" class="form-control" [(ngModel)]="newCustomer.balance" min="0" step="0.001">
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer-custom">
+    <button class="btn btn-secondary" (click)="closeCreateModal()">Annuler</button>
+    <button class="btn btn-info text-white fw-semibold" (click)="submitCreate()" [disabled]="createLoading">
+      <span *ngIf="createLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!createLoading" class="bi bi-check-lg me-1"></i>
+      Créer
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MODAL MODIFIER ════════════════════════ -->
+<div *ngIf="showEditModal" class="modal-backdrop-custom" (click)="closeEditModal()"></div>
+<div *ngIf="showEditModal" class="modal-custom shadow-lg">
+  <div class="modal-header-custom">
+    <h5 class="mb-0 fw-bold">
+      <i class="bi bi-pencil-fill me-2 text-secondary"></i>Modifier Client
+    </h5>
+    <button class="btn-close" (click)="closeEditModal()"></button>
+  </div>
+  <div class="modal-body-custom">
+    <div *ngIf="editError" class="alert alert-danger py-2">{{ editError }}</div>
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="form-label fw-semibold">Nom complet *</label>
+        <input type="text" class="form-control" [(ngModel)]="editCustomer.name">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Téléphone</label>
+        <input type="text" class="form-control" [(ngModel)]="editCustomer.phone">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Age</label>
+        <input type="number" class="form-control" [(ngModel)]="editCustomer.age">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Type Client</label>
+        <select class="form-select" [(ngModel)]="editCustomer.clientType">
+          <option value="STANDARD">Standard</option>
+          <option value="SPORTIF">Sportif</option>
+          <option value="ETUDIANT">Etudiant</option>
+          <option value="MINEUR">Mineur</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Statut</label>
+        <select class="form-select" [(ngModel)]="editCustomer.status">
+          <option value="EN_ATTENTE">En Attente</option>
+          <option value="VALIDE">Validé</option>
+          <option value="ACTIVE">Actif</option>
+          <option value="REJETE">Rejeté</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Balance (DT)</label>
+        <input type="number" class="form-control" [(ngModel)]="editCustomer.balance" min="0" step="0.001">
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer-custom">
+    <button class="btn btn-secondary" (click)="closeEditModal()">Annuler</button>
+    <button class="btn btn-primary fw-semibold" (click)="submitEdit()" [disabled]="editLoading">
+      <span *ngIf="editLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!editLoading" class="bi bi-save me-1"></i>
+      Enregistrer
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════ MODAL SUPPRIMER ══════════════════════ -->
+<div *ngIf="showDeleteModal" class="modal-backdrop-custom" (click)="closeDeleteModal()"></div>
+<div *ngIf="showDeleteModal" class="modal-custom shadow-lg" style="max-width:420px">
+  <div class="modal-header-custom bg-danger text-white">
+    <h5 class="mb-0 fw-bold">
+      <i class="bi bi-trash-fill me-2"></i>Confirmer la suppression
+    </h5>
+    <button class="btn-close btn-close-white" (click)="closeDeleteModal()"></button>
+  </div>
+  <div class="modal-body-custom text-center py-4">
+    <i class="bi bi-exclamation-triangle-fill text-danger fs-1 d-block mb-3"></i>
+    <p class="mb-1">Vous êtes sur le point de supprimer définitivement :</p>
+    <p class="fw-bold fs-5 text-danger">{{ deleteTarget?.name }}</p>
+    <p class="text-muted small">Cette action est irréversible.</p>
+  </div>
+  <div class="modal-footer-custom">
+    <button class="btn btn-secondary" (click)="closeDeleteModal()">Annuler</button>
+    <button class="btn btn-danger fw-semibold" (click)="confirmDelete()" [disabled]="deleteLoading">
+      <span *ngIf="deleteLoading" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!deleteLoading" class="bi bi-trash-fill me-1"></i>
+      Supprimer
+    </button>
+  </div>
 </div>

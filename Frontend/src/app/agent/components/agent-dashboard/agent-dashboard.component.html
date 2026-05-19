@@ -1,0 +1,122 @@
+<div class="page">
+
+  <!-- PROFILE -->
+  <div class="card profile-card">
+    <div class="profile-row">
+      <div class="avatar">{{ agentInitials }}</div>
+      <div class="profile-info">
+        <div class="profile-name">{{ name }}</div>
+        <div class="profile-spec">Agent BSS — {{ speciality }}</div>
+        <div class="profile-tags">
+          <span class="tag tag-green">Actif</span>
+          <span class="tag tag-blue">{{ email }}</span>
+          <span class="tag tag-amber" *ngIf="supervisorName">Sup: {{ supervisorName }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="profile-contact">
+      <div class="contact-item"><i class="bi bi-envelope"></i> {{ email }}</div>
+      <div class="contact-item"><i class="bi bi-phone"></i> {{ phone || 'Non renseigné' }}</div>
+      <div class="contact-item"><i class="bi bi-calendar3"></i> {{ hiredAt || 'N/A' }}</div>
+      <div class="contact-item"><i class="bi bi-geo-alt"></i> Sousse, Tunisie</div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="section-lbl">Mes statistiques</div>
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-val">{{ stats.totalClients }}</div>
+      <div class="stat-lbl">Clients</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">{{ stats.missionsToday }}</div>
+      <div class="stat-lbl">Missions</div>
+    </div>
+    <div class="stat-box s-blue">
+      <div class="stat-val">{{ stats.kmToday | number:'1.1-1' }}</div>
+      <div class="stat-lbl">km today</div>
+    </div>
+    <div class="stat-box s-amber">
+      <div class="stat-val">{{ stats.revenueToday | number:'1.3-3' }}</div>
+      <div class="stat-lbl">DT today</div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="section-lbl" *ngIf="notifications.length > 0">
+    Notifications <span class="notif-badge">{{ notifications.length }}</span>
+  </div>
+  <div class="notif-list" *ngIf="notifications.length > 0">
+    <div class="notif-item" *ngFor="let n of notifications">
+      <div class="notif-dot" [ngClass]="getNotifDot(n.type)"></div>
+      <div class="notif-text">{{ n.message }}</div>
+      <span class="notif-time">{{ n.time }}</span>
+      <button class="notif-action" *ngIf="n.actionLabel" (click)="launchByNotif(n)">
+        {{ n.actionLabel }}
+      </button>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="section-lbl">Mes clients ({{ clients.length }})</div>
+  <div class="client-list">
+    <div class="client-row" *ngFor="let c of clients">
+      <div class="client-init" [class.vip]="c.clientType === 'VIP'">
+        {{ getInitials(c.name) }}
+      </div>
+      <div class="client-meta">
+        <div class="client-name">
+          {{ c.name }}
+          <span class="vip-tag" *ngIf="c.clientType === 'VIP'">VIP</span>
+        </div>
+        <div class="client-phone"><i class="bi bi-phone"></i> {{ c.phone }}</div>
+      </div>
+      <div class="client-right">
+        <div class="client-balance">{{ c.balance | number:'1.3-3' }} DT</div>
+        <span class="pill" [ngClass]="getPillClass(c.missionStatus)">
+          {{ getMissionLabel(c.missionStatus) }}
+        </span>
+      </div>
+      <button class="launch-btn"
+              [disabled]="c.missionStatus === 'active'"
+              [class.disabled]="c.missionStatus === 'active'"
+              (click)="launchMission(c)">
+        <i class="bi bi-car-front-fill"></i>
+        {{ c.missionStatus === 'active' ? 'En cours' : 'Lancer' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- CDR HISTORIQUE -->
+  <div class="section-lbl">Historique missions</div>
+  <div class="card cdr-card">
+    <table class="cdr-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Client</th>
+          <th>Distance</th>
+          <th>Durée</th>
+          <th>Montant</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of cdrLogs">
+          <td class="cdr-id">{{ c.cdrId }}</td>
+          <td>{{ c.clientName }}</td>
+          <td>{{ c.distanceKm }} km</td>
+          <td>{{ c.durationMin }} min</td>
+          <td class="cdr-amount">{{ c.amount | number:'1.3-3' }} DT</td>
+          <td class="cdr-date">{{ c.date }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="cdr-empty" *ngIf="cdrLogs.length === 0">
+      <i class="bi bi-clock-history"></i>
+      <span>Aucune mission enregistrée</span>
+    </div>
+  </div>
+
+</div>

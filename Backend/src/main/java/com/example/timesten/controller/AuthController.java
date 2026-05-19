@@ -38,4 +38,21 @@ public class AuthController {
             ));
         }
     }
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body) {
+        Long userId = Long.valueOf(body.get("userId"));
+        String currentPassword = body.get("currentPassword");
+        String newPassword = body.get("newPassword");
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("message", "Utilisateur non trouvé"));
+        }
+        User user = userOpt.get();
+        if (!user.getPassword().equals(currentPassword)) {
+            return ResponseEntity.status(400).body(Map.of("message", "Mot de passe actuel incorrect"));
+        }
+        user.setPassword(newPassword);
+        userRepository.save(user);
+        return ResponseEntity.ok(Map.of("success", true, "message", "Mot de passe modifié avec succès"));
+    }
 }

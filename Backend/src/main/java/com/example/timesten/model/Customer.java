@@ -38,7 +38,9 @@ public class Customer {
 
     @Column(name = "VERIFICATION_DOC", length = 500)
     private String verificationDoc;
-
     @Column(name = "PROFILE_PICTURE", length = 10000)
     private String profilePicture;
+
+    @Column(name = "AGENT_ID")
+    private Long agentId;
 }
