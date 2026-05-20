@@ -21,22 +21,6 @@ export class AdminCustomersComponent implements OnInit {
   selectedType = '';
   selectedStatus = '';
 
-  // Modal Create
-  showCreateModal = false;
-  createLoading = false;
-  createError = '';
-  newCustomer = {
-    name: '',
-    phone: '',
-    age: null as number | null,
-    clientType: 'STANDARD',
-    balance: 0,
-    status: 'EN_ATTENTE',
-    verificationStatus: 'PENDING',
-    email: '',
-    password: ''
-  };
-
   // Modal Edit
   showEditModal = false;
   editLoading = false;
@@ -115,87 +99,6 @@ export class AdminCustomersComponent implements OnInit {
     this.selectedType = '';
     this.selectedStatus = '';
     this.filteredCustomers = this.customers;
-  }
-
-  // ─── CREATE ────────────────────────────────────────────────────────────────
-
-  openCreateModal() {
-    this.newCustomer = {
-      name: '',
-      phone: '',
-      age: null,
-      clientType: 'STANDARD',
-      balance: 0,
-      status: 'EN_ATTENTE',
-      verificationStatus: 'PENDING',
-      email: '',
-      password: ''
-    };
-    this.createError = '';
-    this.showCreateModal = true;
-  }
-
-  closeCreateModal() { this.showCreateModal = false; }
-
-  submitCreate() {
-    if (!this.newCustomer.name?.trim()) {
-      this.createError = 'Le nom est obligatoire.';
-      return;
-    }
-    if (!this.newCustomer.email?.trim()) {
-      this.createError = "L'email est obligatoire.";
-      return;
-    }
-    if (!this.newCustomer.password || this.newCustomer.password.length < 6) {
-      this.createError = 'Mot de passe min. 6 caractères.';
-      return;
-    }
-    this.createLoading = true;
-    this.createError = '';
-
-    const maxId = this.customers.length > 0
-      ? Math.max(...this.customers.map(c => c.custId || 0))
-      : 0;
-    const newId = maxId + 1;
-    const year = new Date().getFullYear();
-    const codeClient = `CLT-${year}-${String(newId).padStart(3, '0')}`;
-
-    const payload = {
-      custId: newId,
-      codeClient: codeClient,
-      name: this.newCustomer.name,
-      phone: this.newCustomer.phone,
-      age: this.newCustomer.age,
-      clientType: this.newCustomer.clientType,
-      balance: this.newCustomer.balance,
-      status: this.newCustomer.status,
-      verificationStatus: this.newCustomer.verificationStatus
-    };
-
-    this.http.post<any>('/api/customers', payload).subscribe({
-      next: (created) => {
-        const userPayload = {
-          custId: created.custId,
-          email: this.newCustomer.email,
-          password: this.newCustomer.password,
-          role: 'MEMBER',
-          username: this.newCustomer.name
-        };
-        this.http.post('/api/users', userPayload).subscribe({
-          error: (err) => console.error('Erreur création user lié:', err)
-        });
-
-        this.customers.unshift(created);
-        this.applyFilters();
-        this.createLoading = false;
-        this.showCreateModal = false;
-        this.toast('Client créé avec succès !', 'success');
-      },
-      error: (err) => {
-        this.createError = err?.error?.message || 'Erreur lors de la création.';
-        this.createLoading = false;
-      }
-    });
   }
 
   // ─── EDIT ──────────────────────────────────────────────────────────────────

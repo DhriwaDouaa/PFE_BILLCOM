@@ -15,8 +15,8 @@
     </div>
   </div>
 
-  <!-- Header -->
-  <div class="d-flex align-items-center justify-content-between mb-4">
+  <!-- Header — sans bouton Nouveau Client -->
+  <div class="d-flex align-items-center mb-4">
     <div class="d-flex align-items-center gap-3">
       <div class="bg-info bg-opacity-10 p-3 rounded-3">
         <i class="bi bi-people-fill text-info fs-2"></i>
@@ -26,9 +26,6 @@
         <p class="text-muted mb-0">{{ filteredCustomers.length }} client(s) trouvé(s)</p>
       </div>
     </div>
-    <button class="btn btn-info text-white fw-semibold" (click)="openCreateModal()">
-      <i class="bi bi-person-plus-fill me-2"></i>Nouveau Client
-    </button>
   </div>
 
   <!-- Stats statuts -->
@@ -177,25 +174,20 @@
             </td>
             <td>
               <div class="d-flex gap-1 flex-wrap">
-                <!-- Détail -->
                 <button class="btn btn-sm btn-outline-info" (click)="viewDetail(c.custId)" title="Voir détail">
                   <i class="bi bi-eye-fill"></i>
                 </button>
-                <!-- Modifier -->
                 <button class="btn btn-sm btn-outline-secondary" (click)="openEditModal(c)" title="Modifier">
                   <i class="bi bi-pencil-fill"></i>
                 </button>
-                <!-- Valider CIN -->
                 <button *ngIf="c.status === 'EN_ATTENTE' || c.verificationStatus === 'PENDING'"
                   class="btn btn-sm btn-outline-success" (click)="validateCustomer(c)" title="Valider compte">
                   <i class="bi bi-check-lg"></i>
                 </button>
-                <!-- Rejeter CIN -->
                 <button *ngIf="c.status === 'EN_ATTENTE' || c.verificationStatus === 'PENDING'"
                   class="btn btn-sm btn-outline-warning" (click)="rejectCustomer(c)" title="Rejeter compte">
                   <i class="bi bi-x-lg"></i>
                 </button>
-                <!-- Supprimer -->
                 <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(c)" title="Supprimer">
                   <i class="bi bi-trash-fill"></i>
                 </button>
@@ -221,63 +213,6 @@
     </div>
   </div>
 
-</div>
-
-<!-- ═══════════════════════════ MODAL CRÉER ═══════════════════════════ -->
-<div *ngIf="showCreateModal" class="modal-backdrop-custom" (click)="closeCreateModal()"></div>
-<div *ngIf="showCreateModal" class="modal-custom shadow-lg">
-  <div class="modal-header-custom">
-    <h5 class="mb-0 fw-bold">
-      <i class="bi bi-person-plus-fill me-2 text-info"></i>Nouveau Client
-    </h5>
-    <button class="btn-close" (click)="closeCreateModal()"></button>
-  </div>
-  <div class="modal-body-custom">
-    <div *ngIf="createError" class="alert alert-danger py-2">{{ createError }}</div>
-    <div class="row g-3">
-      <div class="col-12">
-        <label class="form-label fw-semibold">Nom complet *</label>
-        <input type="text" class="form-control" [(ngModel)]="newCustomer.name" placeholder="Ex: Ahmed Ben Ali">
-      </div>
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Email *</label>
-        <input type="email" class="form-control" [(ngModel)]="newCustomer.email" placeholder="client@email.com">
-      </div>
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Mot de passe *</label>
-        <input type="password" class="form-control" [(ngModel)]="newCustomer.password" placeholder="Min. 6 caractères">
-      </div>
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Téléphone</label>
-        <input type="text" class="form-control" [(ngModel)]="newCustomer.phone" placeholder="+216 XX XXX XXX">
-      </div>
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Age</label>
-        <input type="number" class="form-control" [(ngModel)]="newCustomer.age" min="1" max="120">
-      </div>
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Type Client</label>
-        <select class="form-select" [(ngModel)]="newCustomer.clientType">
-          <option value="STANDARD">Standard</option>
-          <option value="SPORTIF">Sportif (-10%)</option>
-          <option value="ETUDIANT">Etudiant (-15%)</option>
-          <option value="MINEUR">Mineur (WiFi bloqué)</option>
-        </select>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Balance initiale (DT)</label>
-        <input type="number" class="form-control" [(ngModel)]="newCustomer.balance" min="0" step="0.001">
-      </div>
-    </div>
-  </div>
-  <div class="modal-footer-custom">
-    <button class="btn btn-secondary" (click)="closeCreateModal()">Annuler</button>
-    <button class="btn btn-info text-white fw-semibold" (click)="submitCreate()" [disabled]="createLoading">
-      <span *ngIf="createLoading" class="spinner-border spinner-border-sm me-1"></span>
-      <i *ngIf="!createLoading" class="bi bi-check-lg me-1"></i>
-      Créer
-    </button>
-  </div>
 </div>
 
 <!-- ═══════════════════════════ MODAL MODIFIER ════════════════════════ -->
