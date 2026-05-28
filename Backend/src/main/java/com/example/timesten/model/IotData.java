@@ -15,6 +15,9 @@ public class IotData {
     @Column(name = "IOT_ID")
     private Long iotId;
 
+    @Column(name = "VEHICLE_ID")
+    private Long vehicleId;
+
     @Column(name = "CUST_ID")
     private Long custId;
 
